@@ -177,7 +177,56 @@ CREATE TABLE price_alerts (
 ) ENGINE=InnoDB;
 
 -- ========================================
--- API USAGE LOG TABLE
+-- ADMIN USERS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS admin_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ========================================
+-- API KEYS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS api_keys (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_name VARCHAR(100) NOT NULL UNIQUE,
+    api_key TEXT,
+    api_secret TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ========================================
+-- SYSTEM SETTINGS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS system_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) NOT NULL UNIQUE,
+    setting_value TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ========================================
+-- API LOGS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS api_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    endpoint VARCHAR(255),
+    method VARCHAR(10),
+    status_code INT,
+    response_time_ms INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
+-- ========================================
+-- API USAGE LOG TABLE (legacy)
 -- ========================================
 CREATE TABLE api_usage_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
