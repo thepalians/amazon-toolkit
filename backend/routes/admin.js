@@ -300,4 +300,185 @@ router.get('/logs', async (req, res) => {
   }
 });
 
+// ──────────────────────────────────────────────────────────────
+// GET /api/admin/plans
+// ──────────────────────────────────────────────────────────────
+const SubscriptionPlan = require('../models/SubscriptionPlan');
+const LicenseKey = require('../models/LicenseKey');
+const Payment = require('../models/Payment');
+const UserSubscription = require('../models/UserSubscription');
+
+router.get('/plans', async (req, res) => {
+  try {
+    const plans = await SubscriptionPlan.findAll({ order: [['sort_order', 'ASC']] });
+    res.json({ success: true, plans });
+  } catch (err) {
+    console.error('Admin plans error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load plans.' });
+  }
+});
+
+// PUT /api/admin/plans/:id
+router.put('/plans/:id', async (req, res) => {
+  try {
+    const plan = await SubscriptionPlan.findByPk(req.params.id);
+    if (!plan) return res.status(404).json({ success: false, message: 'Plan not found.' });
+    const allowed = ['display_name', 'price_monthly', 'price_yearly', 'features', 'limits', 'is_active', 'sort_order'];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    await plan.update(updates);
+    res.json({ success: true, message: 'Plan updated.' });
+  } catch (err) {
+    console.error('Admin update plan error:', err);
+    res.status(500).json({ success: false, message: 'Failed to update plan.' });
+  }
+});
+
+// GET /api/admin/license-keys
+router.get('/license-keys', async (req, res) => {
+  try {
+    const { status, plan } = req.query;
+    const where = {};
+    if (status) where.status = status;
+    if (plan) where.plan_name = plan;
+    const keys = await LicenseKey.findAll({ where, order: [['created_at', 'DESC']], limit: 200 });
+    res.json({ success: true, keys });
+  } catch (err) {
+    console.error('Admin license keys error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load license keys.' });
+  }
+});
+
+// POST /api/admin/license-keys/generate  { plan_name, duration, quantity, notes }
+router.post('/license-keys/generate', async (req, res) => {
+  try {
+    const { plan_name, duration, quantity = 1, notes } = req.body;
+    if (!plan_name || !duration) {
+      return res.status(400).json({ success: false, message: 'plan_name and duration are required.' });
+    }
+    const count = Math.min(100, Math.max(1, parseInt(quantity) || 1));
+    const generated = [];
+
+    for (let i = 0; i < count; i++) {
+      let key;
+      let exists = true;
+      while (exists) {
+        const part = () => require('crypto').randomBytes(3).toString('hex').toUpperCase();
+        key = `AST-${part()}-${part()}-${part()}-${part()}`;
+        exists = await LicenseKey.findOne({ where: { license_key: key } });
+      }
+      const rec = await LicenseKey.create({
+        license_key: key,
+        plan_name,
+        duration,
+        status: 'unused',
+        created_by: req.admin.id,
+        notes: notes || null,
+      });
+      generated.push(rec);
+    }
+
+    res.json({ success: true, message: `Generated ${count} license key(s).`, keys: generated });
+  } catch (err) {
+    console.error('Admin generate keys error:', err);
+    res.status(500).json({ success: false, message: 'Failed to generate license keys.' });
+  }
+});
+
+// PUT /api/admin/license-keys/:id/revoke
+router.put('/license-keys/:id/revoke', async (req, res) => {
+  try {
+    const key = await LicenseKey.findByPk(req.params.id);
+    if (!key) return res.status(404).json({ success: false, message: 'License key not found.' });
+    await key.update({ status: 'revoked' });
+    res.json({ success: true, message: 'License key revoked.' });
+  } catch (err) {
+    console.error('Admin revoke key error:', err);
+    res.status(500).json({ success: false, message: 'Failed to revoke license key.' });
+  }
+});
+
+// GET /api/admin/payments
+router.get('/payments', async (req, res) => {
+  try {
+    const { status, gateway } = req.query;
+    const where = {};
+    if (status) where.status = status;
+    if (gateway) where.payment_gateway = gateway;
+    const payments = await Payment.findAll({ where, order: [['created_at', 'DESC']], limit: 200 });
+    res.json({ success: true, payments });
+  } catch (err) {
+    console.error('Admin payments error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load payments.' });
+  }
+});
+
+// GET /api/admin/subscriptions
+router.get('/subscriptions', async (req, res) => {
+  try {
+    const { status } = req.query;
+    const where = status ? { status } : {};
+    const subs = await UserSubscription.findAll({ where, order: [['created_at', 'DESC']], limit: 200 });
+    res.json({ success: true, subscriptions: subs });
+  } catch (err) {
+    console.error('Admin subscriptions error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load subscriptions.' });
+  }
+});
+
+// PUT /api/admin/subscriptions/:id
+router.put('/subscriptions/:id', async (req, res) => {
+  try {
+    const sub = await UserSubscription.findByPk(req.params.id);
+    if (!sub) return res.status(404).json({ success: false, message: 'Subscription not found.' });
+    const allowed = ['plan_name', 'status', 'expires_at', 'auto_renew'];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    await sub.update(updates);
+    // Sync user subscription_plan if plan changed
+    if (updates.plan_name) {
+      const validPlans = ['free', 'basic', 'pro', 'enterprise'];
+      const plan = validPlans.includes(updates.plan_name) ? updates.plan_name : 'basic';
+      await User.update({ subscription_plan: plan }, { where: { id: sub.user_id } });
+    }
+    res.json({ success: true, message: 'Subscription updated.' });
+  } catch (err) {
+    console.error('Admin update subscription error:', err);
+    res.status(500).json({ success: false, message: 'Failed to update subscription.' });
+  }
+});
+
+// GET /api/admin/revenue
+router.get('/revenue', async (req, res) => {
+  try {
+    const { sequelize: seq } = require('../config/database');
+    const monthly = await seq.query(`
+      SELECT DATE_FORMAT(created_at, '%Y-%m') as month,
+             SUM(amount) as total,
+             COUNT(*) as count,
+             payment_gateway
+      FROM payments
+      WHERE status = 'completed' AND created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+      GROUP BY month, payment_gateway
+      ORDER BY month DESC
+    `, { type: seq.QueryTypes.SELECT });
+
+    const byPlan = await seq.query(`
+      SELECT plan_name, SUM(amount) as total, COUNT(*) as count
+      FROM payments
+      WHERE status = 'completed'
+      GROUP BY plan_name
+    `, { type: seq.QueryTypes.SELECT });
+
+    res.json({ success: true, monthly, byPlan });
+  } catch (err) {
+    console.error('Admin revenue error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load revenue data.' });
+  }
+});
+
 module.exports = router;
