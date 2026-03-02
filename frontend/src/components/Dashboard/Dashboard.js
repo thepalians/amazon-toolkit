@@ -83,6 +83,9 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {/* Subscription Status */}
+      <SubscriptionBanner />
+
       {/* Tools Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
         {tools.map((tool) => (
@@ -101,6 +104,39 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
+    </div>
+  );
+}
+
+function SubscriptionBanner() {
+  const [info, setInfo] = React.useState(null);
+  React.useEffect(() => {
+    import('../../services/api').then(({ default: api }) => {
+      api.get('/subscription/current').then((res) => setInfo(res.data)).catch(() => {});
+    });
+  }, []);
+
+  if (!info) return null;
+  const plan = info.plan || 'free';
+  const planColors = { free: '#6b7280', basic: '#3b82f6', premium: '#8b5cf6', pro: '#FF9900', enterprise: '#FF9900' };
+  const color = planColors[plan] || '#6b7280';
+
+  return (
+    <div style={{ marginBottom: 20, padding: '14px 20px', background: '#fff', borderRadius: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div>
+        <span style={{ fontSize: 13, color: '#6b7280' }}>Current Plan: </span>
+        <span style={{ fontWeight: 700, color, textTransform: 'capitalize', fontSize: 15 }}>{plan}</span>
+        {info.subscription && (
+          <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 12 }}>
+            Expires: {new Date(info.subscription.expires_at).toLocaleDateString()}
+          </span>
+        )}
+      </div>
+      {plan === 'free' && (
+        <a href="/amazon-seller-toolkit/pricing" style={{ padding: '8px 18px', background: '#FF9900', color: '#fff', borderRadius: 8, fontWeight: 700, textDecoration: 'none', fontSize: 13 }}>
+          Upgrade Plan ↗
+        </a>
+      )}
     </div>
   );
 }

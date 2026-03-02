@@ -324,3 +324,114 @@ INSERT INTO country_configs (
 ('EG', 'Egypt', 'amazon.eg', 'EGP', 'E£',
  14.00, 0.00, 0.00, 30.00, 10.00,
  50.00, 15.00, 5.00, 'ar', 'Africa/Cairo');
+
+-- ========================================
+-- SUBSCRIPTION PLANS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS subscription_plans (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    display_name VARCHAR(100) NOT NULL,
+    price_monthly DECIMAL(10,2) NOT NULL DEFAULT 0,
+    price_yearly DECIMAL(10,2) NOT NULL DEFAULT 0,
+    currency VARCHAR(5) DEFAULT 'INR',
+    features JSON,
+    limits JSON,
+    is_active BOOLEAN DEFAULT TRUE,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ========================================
+-- LICENSE KEYS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS license_keys (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    license_key VARCHAR(50) NOT NULL UNIQUE,
+    plan_name VARCHAR(50) NOT NULL,
+    duration ENUM('monthly', 'yearly') NOT NULL,
+    status ENUM('unused', 'active', 'expired', 'revoked') DEFAULT 'unused',
+    activated_by INT,
+    activated_at TIMESTAMP NULL,
+    expires_at TIMESTAMP NULL,
+    created_by INT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (activated_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_key (license_key),
+    INDEX idx_status (status),
+    INDEX idx_plan (plan_name)
+) ENGINE=InnoDB;
+
+-- ========================================
+-- PAYMENTS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    plan_name VARCHAR(50) NOT NULL,
+    duration ENUM('monthly', 'yearly') NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(5) DEFAULT 'INR',
+    payment_gateway ENUM('razorpay', 'paypal', 'license_key', 'admin') NOT NULL,
+    gateway_order_id VARCHAR(255),
+    gateway_payment_id VARCHAR(255),
+    gateway_signature VARCHAR(255),
+    status ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'pending',
+    license_key_id INT,
+    metadata JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (license_key_id) REFERENCES license_keys(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_status (status),
+    INDEX idx_gateway (payment_gateway)
+) ENGINE=InnoDB;
+
+-- ========================================
+-- USER SUBSCRIPTIONS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS user_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    plan_name VARCHAR(50) NOT NULL,
+    duration ENUM('monthly', 'yearly') NOT NULL,
+    status ENUM('active', 'expired', 'cancelled') DEFAULT 'active',
+    starts_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    payment_id INT,
+    license_key_id INT,
+    auto_renew BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE SET NULL,
+    FOREIGN KEY (license_key_id) REFERENCES license_keys(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_status (status),
+    INDEX idx_expires (expires_at)
+) ENGINE=InnoDB;
+
+-- ========================================
+-- DEFAULT SUBSCRIPTION PLANS
+-- ========================================
+INSERT IGNORE INTO subscription_plans (name, display_name, price_monthly, price_yearly, currency, features, limits, sort_order) VALUES
+('free', 'Free', 0, 0, 'INR',
+  '{"price_alerts": false, "api_access": false, "priority_support": false}',
+  '{"profit_calculator": 5, "keyword_research": 3, "listing_optimizer": 1, "competitor_monitor": 1}',
+  0),
+('basic', 'Basic', 499, 4999, 'INR',
+  '{"price_alerts": false, "api_access": false, "priority_support": false}',
+  '{"profit_calculator": -1, "keyword_research": 20, "listing_optimizer": 5, "competitor_monitor": 5}',
+  1),
+('premium', 'Premium', 999, 9999, 'INR',
+  '{"price_alerts": true, "api_access": false, "priority_support": true}',
+  '{"profit_calculator": -1, "keyword_research": -1, "listing_optimizer": 20, "competitor_monitor": 20}',
+  2),
+('pro', 'Pro', 1999, 19999, 'INR',
+  '{"price_alerts": true, "api_access": true, "priority_support": true}',
+  '{"profit_calculator": -1, "keyword_research": -1, "listing_optimizer": -1, "competitor_monitor": -1}',
+  3);

@@ -49,6 +49,9 @@ app.use('/api/profit', require('./routes/profit'));
 app.use('/api/keywords', require('./routes/keywords'));
 app.use('/api/listing', require('./routes/listing'));
 app.use('/api/competitor', require('./routes/competitor'));
+app.use('/api/plans', require('./routes/plans'));
+app.use('/api/subscription', require('./routes/subscription'));
+app.use('/api/payments', require('./routes/payments'));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');
