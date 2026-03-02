@@ -4,7 +4,10 @@ import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 const navItems = [
   { path: '/admin/dashboard', label: '📊 Dashboard' },
   { path: '/admin/users', label: '👥 Users' },
-  { path: '/admin/api-keys', label: '🔑 API Keys' },
+  { path: '/admin/plans', label: '💎 Plans' },
+  { path: '/admin/license-keys', label: '🔑 License Keys' },
+  { path: '/admin/subscriptions', label: '📈 Subscriptions' },
+  { path: '/admin/api-keys', label: '🛠️ API Keys' },
   { path: '/admin/settings', label: '⚙️ Settings' },
   { path: '/admin/logs', label: '📋 Logs' },
 ];

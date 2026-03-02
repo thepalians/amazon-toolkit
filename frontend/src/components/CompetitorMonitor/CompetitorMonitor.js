@@ -3,7 +3,7 @@ import api from '../../services/api';
 import { useCountry } from '../../context/CountryContext';
 
 export default function CompetitorMonitor() {
-  const { countryCode, currentCountry, countries, changeCountry } = useCountry();
+  const { countryCode, countries, changeCountry } = useCountry();
   const [selectedCountry, setSelectedCountry] = useState(countryCode);
   const [asin, setAsin] = useState('');
   const [trackedItems, setTrackedItems] = useState([]);

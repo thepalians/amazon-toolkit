@@ -18,6 +18,10 @@ import AdminUsers from './components/Admin/AdminUsers';
 import AdminApiKeys from './components/Admin/AdminApiKeys';
 import AdminSettings from './components/Admin/AdminSettings';
 import AdminLogs from './components/Admin/AdminLogs';
+import PricingPage from './components/Subscription/PricingPage';
+import AdminLicenseKeys from './components/Admin/AdminLicenseKeys';
+import AdminPlans from './components/Admin/AdminPlans';
+import AdminSubscriptions from './components/Admin/AdminSubscriptions';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -100,6 +104,16 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/pricing"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <PricingPage />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
 
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -117,6 +131,9 @@ export default function App() {
             <Route path="api-keys" element={<AdminApiKeys />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="logs" element={<AdminLogs />} />
+            <Route path="plans" element={<AdminPlans />} />
+            <Route path="license-keys" element={<AdminLicenseKeys />} />
+            <Route path="subscriptions" element={<AdminSubscriptions />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
