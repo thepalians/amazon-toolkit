@@ -11,6 +11,13 @@ import KeywordResearch from './components/KeywordResearch/KeywordResearch';
 import ListingOptimizer from './components/ListingOptimizer/ListingOptimizer';
 import CompetitorMonitor from './components/CompetitorMonitor/CompetitorMonitor';
 import AuthPage from './components/Auth/AuthPage';
+import AdminLogin from './components/Admin/AdminLogin';
+import AdminLayout from './components/Admin/AdminLayout';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import AdminUsers from './components/Admin/AdminUsers';
+import AdminApiKeys from './components/Admin/AdminApiKeys';
+import AdminSettings from './components/Admin/AdminSettings';
+import AdminLogs from './components/Admin/AdminLogs';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -30,11 +37,17 @@ function PrivateRoute({ children }) {
   return token ? children : <Navigate to="/login" replace />;
 }
 
+function AdminRoute({ children }) {
+  const token = localStorage.getItem('adminToken');
+  return token ? children : <Navigate to="/admin/login" replace />;
+}
+
 export default function App() {
   return (
     <BrowserRouter basename="/amazon-seller-toolkit">
       <CountryProvider>
         <Routes>
+          {/* Regular user routes */}
           <Route path="/login" element={<AuthPage mode="login" />} />
           <Route path="/register" element={<AuthPage mode="register" />} />
           <Route
@@ -87,6 +100,25 @@ export default function App() {
               </PrivateRoute>
             }
           />
+
+          {/* Admin routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="api-keys" element={<AdminApiKeys />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="logs" element={<AdminLogs />} />
+          </Route>
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </CountryProvider>
