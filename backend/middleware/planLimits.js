@@ -36,10 +36,18 @@ function checkPlanLimit(feature) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
+      const endpointPrefixes = {
+        profit_calculator: '/api/profit',
+        keyword_research: '/api/keywords',
+        listing_optimizer: '/api/listing',
+        competitor_monitor: '/api/competitor',
+      };
+      const prefix = endpointPrefixes[feature] || `/api/${feature}`;
+
       const usageCount = await ApiLog.count({
         where: {
           user_id: req.user.id,
-          endpoint: { [Op.like]: `%/${feature.replace(/_/g, '/')}%` },
+          endpoint: { [Op.like]: `${prefix}%` },
           created_at: { [Op.gte]: today },
         },
       });

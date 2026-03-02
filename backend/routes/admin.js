@@ -441,7 +441,7 @@ router.put('/subscriptions/:id', async (req, res) => {
     await sub.update(updates);
     // Sync user subscription_plan if plan changed
     if (updates.plan_name) {
-      const validPlans = ['free', 'basic', 'pro', 'enterprise'];
+      const validPlans = ['free', 'basic', 'premium', 'pro', 'enterprise'];
       const plan = validPlans.includes(updates.plan_name) ? updates.plan_name : 'basic';
       await User.update({ subscription_plan: plan }, { where: { id: sub.user_id } });
     }

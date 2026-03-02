@@ -80,7 +80,7 @@ router.post('/activate-key', async (req, res) => {
     await key.update({ status: 'active', activated_by: req.user.id, activated_at: now, expires_at: expires });
 
     // Update user subscription_plan
-    const validPlans = ['free', 'basic', 'pro', 'enterprise'];
+    const validPlans = ['free', 'basic', 'premium', 'pro', 'enterprise'];
     const planName = validPlans.includes(key.plan_name) ? key.plan_name : 'basic';
     await User.update({ subscription_plan: planName }, { where: { id: req.user.id } });
 

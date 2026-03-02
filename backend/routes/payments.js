@@ -37,7 +37,7 @@ async function activateSubscription(userId, planName, duration, paymentId, licen
     license_key_id: licenseKeyId,
   });
 
-  const validPlans = ['free', 'basic', 'pro', 'enterprise'];
+  const validPlans = ['free', 'basic', 'premium', 'pro', 'enterprise'];
   const plan = validPlans.includes(planName) ? planName : 'basic';
   await User.update({ subscription_plan: plan }, { where: { id: userId } });
 
