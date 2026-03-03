@@ -4,6 +4,20 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v3.0.0] - 2026-03-03
+### Phase 3: PPC Campaign Manager
+- New tool: Amazon PPC Campaign Manager
+- Create and manage Sponsored Products/Brands/Display campaigns
+- Keyword-level tracking: impressions, clicks, spend, sales, orders
+- Auto-calculated metrics: ACoS, ROAS, CPC, CTR, conversion rate
+- AI Optimizer: bid adjustment suggestions based on performance
+- Budget recommendations and scaling suggestions
+- Campaign summary dashboard with charts
+- 3-tab interface: Campaigns, Keywords, Optimizer
+- Export campaign data as CSV/PDF
+
+---
+
 ## [v2.5.0] - 2026-03-03
 ### Phase 2: Supplier Database (PHASE 2 COMPLETE)
 - New tool: Supplier Database Manager

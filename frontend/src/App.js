@@ -34,6 +34,7 @@ import SalesEstimator from './components/SalesEstimator/SalesEstimator';
 import ReviewAnalyzer from './components/ReviewAnalyzer/ReviewAnalyzer';
 import Inventory from './components/Inventory/Inventory';
 import Suppliers from './components/Suppliers/Suppliers';
+import PPCManager from './components/PPC/PPCManager';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -189,6 +190,16 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <Suppliers />
+          <Route
+            path="/ppc"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <PPCManager />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
