@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import { useCountry } from '../../context/CountryContext';
+import ExportButton from '../Layout/ExportButton';
+import { exportToCSV, exportToPDF, getKeywordColumns } from '../../utils/exportUtils';
 
 export default function KeywordResearch() {
   const { countryCode, currentCountry, countries, changeCountry } = useCountry();
@@ -34,6 +36,16 @@ export default function KeywordResearch() {
     }
   };
 
+  const handleExportCSV = () => {
+    const columns = getKeywordColumns();
+    exportToCSV(results, columns, `keywords-${searched}`);
+  };
+
+  const handleExportPDF = () => {
+    const columns = getKeywordColumns();
+    exportToPDF(results, columns, `keywords-${searched}`, `Keyword Research: "${searched}" — ${results.length} results`);
+  };
+
   const competitionBadge = (level) => {
     const map = { low: 'badge-green', medium: 'badge-yellow', high: 'badge-red' };
     return map[level] || 'badge-gray';
@@ -41,33 +53,26 @@ export default function KeywordResearch() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>🔍 Keyword Research</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700 }}>🔍 Keyword Research</h2>
+        {results.length > 0 && <ExportButton onCSV={handleExportCSV} onPDF={handleExportPDF} />}
+      </div>
 
       <div className="card">
         <form onSubmit={handleSearch}>
           <div className="form-row" style={{ alignItems: 'flex-end' }}>
             <div className="form-group" style={{ flexGrow: 2 }}>
               <label className="form-label">Seed Keyword</label>
-              <input
-                className="form-control"
-                type="text"
-                value={keyword}
+              <input className="form-control" type="text" value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="e.g. wireless earbuds, yoga mat..."
-                required
-              />
+                placeholder="e.g. wireless earbuds, yoga mat..." required />
             </div>
             <div className="form-group">
               <label className="form-label">Marketplace</label>
-              <select
-                className="form-control"
-                value={selectedCountry}
-                onChange={(e) => { setSelectedCountry(e.target.value); changeCountry(e.target.value); }}
-              >
+              <select className="form-control" value={selectedCountry}
+                onChange={(e) => { setSelectedCountry(e.target.value); changeCountry(e.target.value); }}>
                 {countries.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag || ''} {c.name}
-                  </option>
+                  <option key={c.code} value={c.code}>{c.flag || ''} {c.name}</option>
                 ))}
               </select>
             </div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import { useCountry } from '../../context/CountryContext';
+import ExportButton from '../Layout/ExportButton';
+import { exportToCSV, exportToPDF, exportListingResult } from '../../utils/exportUtils';
 
 export default function ListingOptimizer() {
   const { countryCode, currentCountry, countries, changeCountry } = useCountry();
@@ -48,10 +50,7 @@ export default function ListingOptimizer() {
   };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      // Brief visual feedback could go here; browser native clipboard API success
-    }).catch(() => {
-      // Fallback: create a temporary textarea
+    navigator.clipboard.writeText(text).then(() => {}).catch(() => {
       const el = document.createElement('textarea');
       el.value = text;
       document.body.appendChild(el);
@@ -61,12 +60,27 @@ export default function ListingOptimizer() {
     });
   };
 
+  const handleExportCSV = () => {
+    const { data, columns } = exportListingResult(result);
+    exportToCSV(data, columns, 'listing-optimization');
+  };
+
+  const handleExportPDF = () => {
+    const { data, columns } = exportListingResult(result);
+    exportToPDF(data, columns, 'listing-optimization', `AI Listing Optimization — Score: ${result.optimizationScore}/100`);
+  };
+
   return (
     <div>
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>🤖 AI Listing Optimizer</h2>
-      <p style={{ color: '#6b7280', marginBottom: 20, fontSize: 14 }}>
-        Powered by Claude AI — optimizes your Amazon listing for {currentCountry?.name} marketplace
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div>
+          <h2 style={{ fontSize: 22, fontWeight: 700 }}>🤖 AI Listing Optimizer</h2>
+          <p style={{ color: '#6b7280', marginTop: 4, fontSize: 14 }}>
+            Powered by Claude AI — optimizes your Amazon listing for {currentCountry?.name} marketplace
+          </p>
+        </div>
+        {result && <ExportButton onCSV={handleExportCSV} onPDF={handleExportPDF} />}
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: 20 }}>
         {/* Input form */}
@@ -77,11 +91,8 @@ export default function ListingOptimizer() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Marketplace</label>
-                <select
-                  className="form-control"
-                  value={selectedCountry}
-                  onChange={(e) => { setSelectedCountry(e.target.value); changeCountry(e.target.value); }}
-                >
+                <select className="form-control" value={selectedCountry}
+                  onChange={(e) => { setSelectedCountry(e.target.value); changeCountry(e.target.value); }}>
                   {countries.map((c) => (
                     <option key={c.code} value={c.code}>{c.flag || ''} {c.name}</option>
                   ))}
@@ -105,7 +116,7 @@ export default function ListingOptimizer() {
 
             <div className="form-group">
               <label className="form-label">Bullet Points (one per line)</label>
-              <textarea className="form-control" name="bulletsText" value={form.bulletsText} onChange={handleChange} rows={5} placeholder="Feature one&#10;Feature two&#10;Feature three" style={{ resize: 'vertical' }} />
+              <textarea className="form-control" name="bulletsText" value={form.bulletsText} onChange={handleChange} rows={5} placeholder={"Feature one\nFeature two\nFeature three"} style={{ resize: 'vertical' }} />
             </div>
 
             <div className="form-group">

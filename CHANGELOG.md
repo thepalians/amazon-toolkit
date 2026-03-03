@@ -4,6 +4,20 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v1.6.0] - 2026-03-03
+### 📤 Export CSV/PDF Feature (Phase 1)
+- Added universal export utility (`exportUtils.js`) for CSV & PDF generation
+- Added reusable `ExportButton` dropdown component
+- **Profit Calculator**: Export profit report as CSV or PDF
+- **Keyword Research**: Export keyword results with volume, competition, trend scores
+- **AI Listing Optimizer**: Export optimized title, bullets, description, backend keywords
+- **Competitor Monitor**: Export tracked ASINs list + Price history per ASIN
+- PDF exports include branded header, Amazon orange theme, page numbers
+- CSV exports include UTF-8 BOM for proper Excel/Google Sheets compatibility
+- Installed `jspdf`, `jspdf-autotable`, `file-saver` libraries
+
+---
+
 ## [v1.5.0] - 2026-03-03
 ### 💱 Currency Conversion & PayPal Integration
 - Added live currency conversion API (`/api/currency/rates`) with 1hr cache

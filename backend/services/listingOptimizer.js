@@ -5,6 +5,7 @@
  * Claude API se Amazon product listing optimize
  * karta hai - title, bullets, description aur
  * backend keywords har country ke hisab se.
+ * Optimized for Amazon A10 Algorithm.
  * =============================================
  */
 
@@ -15,14 +16,6 @@ const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
 class ListingOptimizer {
   /**
    * Optimize a product listing using Claude AI
-   * @param {Object} params
-   * @param {string} params.title - Original product title
-   * @param {string} params.description - Original description
-   * @param {string[]} params.bullets - Original bullet points
-   * @param {string[]} params.keywords - Target keywords to include
-   * @param {string} params.category - Product category
-   * @param {string} params.countryCode - Country code
-   * @param {Object} params.countryConfig - Country config (language, marketplace)
    */
   static async optimize(params) {
     const {
@@ -35,9 +28,12 @@ class ListingOptimizer {
       countryConfig = {},
     } = params;
 
-    const language = countryConfig.language || 'en';
     const marketplace = countryConfig.marketplace || 'amazon.com';
     const currencySymbol = countryConfig.currencySymbol || '$';
+
+    // Detect input language from user's actual text, NOT country
+    const inputText = `${title} ${description} ${bullets.join(' ')}`;
+    const detectedLanguage = this.detectLanguage(inputText);
 
     const prompt = this.buildPrompt({
       title,
@@ -46,13 +42,13 @@ class ListingOptimizer {
       keywords,
       category,
       countryCode,
-      language,
+      language: detectedLanguage,
       marketplace,
       currencySymbol,
     });
 
     const message = await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 2048,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -69,25 +65,75 @@ class ListingOptimizer {
       backendKeywords: parsed.backendKeywords || [],
       optimizationScore: this.scoreOptimization(parsed),
       tokensUsed,
-      aiModel: 'claude-3-5-haiku-20241022',
-      language,
+      aiModel: 'claude-sonnet-4-20250514',
+      language: detectedLanguage,
       marketplace,
     };
+  }
+
+  /**
+   * Detect language from input text
+   * If input is English → output in English
+   * If input is Hindi → output in Hindi
+   * etc.
+   */
+  static detectLanguage(text) {
+    if (!text || text.trim().length === 0) return 'en';
+
+    // Check for Hindi (Devanagari script)
+    const hindiPattern = /[\u0900-\u097F]/;
+    if (hindiPattern.test(text)) return 'hi';
+
+    // Check for Arabic script
+    const arabicPattern = /[\u0600-\u06FF]/;
+    if (arabicPattern.test(text)) return 'ar';
+
+    // Check for Japanese
+    const japanesePattern = /[\u3040-\u30FF\u4E00-\u9FFF]/;
+    if (japanesePattern.test(text)) return 'ja';
+
+    // Check for Chinese
+    const chinesePattern = /[\u4E00-\u9FFF]/;
+    if (chinesePattern.test(text)) return 'zh';
+
+    // Check for Spanish/Portuguese/French common patterns
+    const spanishPattern = /[ñáéíóúü¿¡]/i;
+    if (spanishPattern.test(text)) return 'es';
+
+    const frenchPattern = /[àâçéèêëïîôùûüÿœæ]/i;
+    if (frenchPattern.test(text)) return 'fr';
+
+    const germanPattern = /[äöüßÄÖÜ]/;
+    if (germanPattern.test(text)) return 'de';
+
+    // Default: English
+    return 'en';
   }
 
   static buildPrompt({ title, description, bullets, keywords, category, countryCode, language, marketplace, currencySymbol }) {
     const bulletsText = bullets.map((b, i) => `${i + 1}. ${b}`).join('\n');
     const keywordsText = keywords.join(', ');
 
-    const languageInstruction = language !== 'en'
-      ? `IMPORTANT: Write all output in the local language for ${countryCode} (language code: ${language}), as this is for the ${marketplace} marketplace.`
-      : `Write all output in English for the ${marketplace} marketplace.`;
+    const languageMap = {
+      en: 'English',
+      hi: 'Hindi',
+      ar: 'Arabic',
+      ja: 'Japanese',
+      zh: 'Chinese',
+      es: 'Spanish',
+      fr: 'French',
+      de: 'German',
+      pt: 'Portuguese',
+      it: 'Italian',
+    };
 
-    return `You are an expert Amazon listing copywriter for the ${marketplace} marketplace (${countryCode}).
+    const languageName = languageMap[language] || 'English';
 
-${languageInstruction}
+    return `You are an expert Amazon listing copywriter optimized for Amazon's A10 algorithm for the ${marketplace} marketplace (${countryCode}).
 
-Optimize this Amazon product listing for maximum conversion and SEO:
+CRITICAL LANGUAGE RULE: The user's input is in ${languageName}. You MUST write ALL output in ${languageName}. Match the SAME language as the input text. If input is in English, output MUST be in English. Do NOT translate to any other language.
+
+Optimize this Amazon product listing for maximum conversion, SEO, and Amazon A10 algorithm ranking:
 
 ORIGINAL TITLE: ${title || 'Not provided'}
 ORIGINAL DESCRIPTION: ${description || 'Not provided'}
@@ -95,6 +141,7 @@ ORIGINAL BULLETS:
 ${bulletsText || 'Not provided'}
 CATEGORY: ${category}
 TARGET KEYWORDS: ${keywordsText || 'None specified'}
+MARKETPLACE: ${marketplace} (${countryCode})
 
 Please provide an optimized listing in this EXACT JSON format (no markdown, pure JSON):
 {
@@ -110,18 +157,23 @@ Please provide an optimized listing in this EXACT JSON format (no markdown, pure
   "backendKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]
 }
 
-Rules:
-- Title: Include primary keyword at start, keep under 200 characters
-- Bullets: Start with ALL-CAPS benefit label, be specific with numbers/features
-- Description: Tell a story, address customer pain points, include keywords naturally
-- Backend keywords: 5-10 relevant search terms not already in title/bullets
-- Do NOT include: prices, promotions, subjective claims, competitor names`;
+Amazon A10 Algorithm Optimization Rules:
+- Title: Place primary keyword at the very start, include 2-3 secondary keywords naturally, keep under 200 characters
+- Title: Use format: [Primary Keyword] - [Brand/Product] [Key Feature] | [Secondary Keywords] | [Benefit]
+- Bullets: Start each with ALL-CAPS benefit label, be specific with numbers/features/dimensions
+- Bullets: Include long-tail keywords naturally in each bullet point
+- Description: Tell a compelling story, address customer pain points, include keywords naturally
+- Description: Use short paragraphs, focus on benefits over features
+- Backend keywords: 5-10 relevant search terms NOT already in title/bullets (no duplicates)
+- Backend keywords: Include common misspellings, synonyms, and related terms
+- Do NOT include: prices (${currencySymbol}), promotions, subjective claims ("best", "#1"), competitor names, HTML tags
+- Focus on: Sales velocity signals, relevance matching, customer engagement triggers
+- REMEMBER: Output language MUST match input language (${languageName})`;
   }
 
   static parseResponse(text) {
     const result = { title: '', description: '', bullets: [], backendKeywords: [] };
     try {
-      // Try to extract JSON from response
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
@@ -131,7 +183,6 @@ Rules:
         result.backendKeywords = Array.isArray(parsed.backendKeywords) ? parsed.backendKeywords : [];
       }
     } catch {
-      // If JSON parse fails, try regex extraction
       const titleMatch = text.match(/"title":\s*"([^"]+)"/);
       if (titleMatch) result.title = titleMatch[1];
     }

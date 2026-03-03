@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useCountry } from '../../context/CountryContext';
+import ExportButton from '../Layout/ExportButton';
+import { exportToCSV, exportToPDF } from '../../utils/exportUtils';
 
 export default function CompetitorMonitor() {
   const { countryCode, countries, changeCountry } = useCountry();
@@ -83,9 +85,46 @@ export default function CompetitorMonitor() {
     }
   };
 
+  // Export Tracked Items
+  const trackedColumns = [
+    { label: 'ASIN', accessor: 'asin' },
+    { label: 'Title', accessor: (row) => row.product_title || 'N/A' },
+    { label: 'Country', accessor: 'country_code' },
+    { label: 'Marketplace', accessor: 'marketplace' },
+  ];
+
+  const handleExportTrackedCSV = () => {
+    exportToCSV(trackedItems, trackedColumns, 'competitor-tracked-asins');
+  };
+
+  const handleExportTrackedPDF = () => {
+    exportToPDF(trackedItems, trackedColumns, 'competitor-tracked-asins', `Competitor Monitor — ${trackedItems.length} Tracked ASINs`);
+  };
+
+  // Export Price History
+  const historyColumns = [
+    { label: 'Date/Time', accessor: (row) => new Date(row.recorded_at).toLocaleString() },
+    { label: 'Price', accessor: 'price' },
+    { label: 'Currency', accessor: 'currency' },
+    { label: 'Stock Status', accessor: (row) => row.stock_status || 'Unknown' },
+    { label: 'Rating', accessor: (row) => row.rating || 'N/A' },
+    { label: 'Reviews', accessor: (row) => row.review_count || 'N/A' },
+  ];
+
+  const handleExportHistoryCSV = () => {
+    exportToCSV(priceHistory, historyColumns, `price-history-${selectedItem?.asin}`);
+  };
+
+  const handleExportHistoryPDF = () => {
+    exportToPDF(priceHistory, historyColumns, `price-history-${selectedItem?.asin}`, `Price History — ${selectedItem?.asin} (${selectedItem?.product_title || ''})`);
+  };
+
   return (
     <div>
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>👁️ Competitor Price Monitor</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700 }}>👁️ Competitor Price Monitor</h2>
+        {trackedItems.length > 0 && <ExportButton onCSV={handleExportTrackedCSV} onPDF={handleExportTrackedPDF} label="Export ASINs" />}
+      </div>
 
       {/* Add Tracking Form */}
       <div className="card">
@@ -96,25 +135,14 @@ export default function CompetitorMonitor() {
           <div className="form-row" style={{ alignItems: 'flex-end' }}>
             <div className="form-group" style={{ flexGrow: 2 }}>
               <label className="form-label">ASIN</label>
-              <input
-                className="form-control"
-                type="text"
-                value={asin}
-                onChange={(e) => setAsin(e.target.value)}
-                placeholder="B08N5WRWNW"
-                maxLength={10}
-                pattern="[A-Za-z0-9]{10}"
-                title="10-character Amazon ASIN"
-                required
-              />
+              <input className="form-control" type="text" value={asin}
+                onChange={(e) => setAsin(e.target.value)} placeholder="B08N5WRWNW"
+                maxLength={10} pattern="[A-Za-z0-9]{10}" title="10-character Amazon ASIN" required />
             </div>
             <div className="form-group">
               <label className="form-label">Marketplace</label>
-              <select
-                className="form-control"
-                value={selectedCountry}
-                onChange={(e) => { setSelectedCountry(e.target.value); changeCountry(e.target.value); }}
-              >
+              <select className="form-control" value={selectedCountry}
+                onChange={(e) => { setSelectedCountry(e.target.value); changeCountry(e.target.value); }}>
                 {countries.map((c) => (
                   <option key={c.code} value={c.code}>{c.flag || ''} {c.name}</option>
                 ))}
@@ -155,26 +183,16 @@ export default function CompetitorMonitor() {
                     <td style={{ fontSize: 13, color: '#6b7280' }}>{item.marketplace}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          className="btn btn-secondary"
-                          style={{ padding: '4px 10px', fontSize: 12 }}
-                          onClick={() => handleCheck(item.id)}
-                          disabled={checkingId === item.id}
-                        >
+                        <button className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: 12 }}
+                          onClick={() => handleCheck(item.id)} disabled={checkingId === item.id}>
                           {checkingId === item.id ? <span className="loader" style={{ width: 12, height: 12 }} /> : '🔄 Check'}
                         </button>
-                        <button
-                          className="btn btn-secondary"
-                          style={{ padding: '4px 10px', fontSize: 12 }}
-                          onClick={() => handleViewHistory(item)}
-                        >
+                        <button className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: 12 }}
+                          onClick={() => handleViewHistory(item)}>
                           📈 History
                         </button>
-                        <button
-                          className="btn btn-danger"
-                          style={{ padding: '4px 10px', fontSize: 12 }}
-                          onClick={() => handleRemove(item.id)}
-                        >
+                        <button className="btn btn-danger" style={{ padding: '4px 10px', fontSize: 12 }}
+                          onClick={() => handleRemove(item.id)}>
                           🗑️
                         </button>
                       </div>
@@ -194,10 +212,13 @@ export default function CompetitorMonitor() {
       {/* Price History */}
       {selectedItem && (
         <div className="card">
-          <h3 className="card-title">
-            Price History — {selectedItem.asin}
-            {selectedItem.product_title && <span style={{ fontWeight: 400, fontSize: 14, color: '#6b7280' }}> — {selectedItem.product_title}</span>}
-          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h3 className="card-title" style={{ marginBottom: 0 }}>
+              Price History — {selectedItem.asin}
+              {selectedItem.product_title && <span style={{ fontWeight: 400, fontSize: 14, color: '#6b7280' }}> — {selectedItem.product_title}</span>}
+            </h3>
+            {priceHistory.length > 0 && <ExportButton onCSV={handleExportHistoryCSV} onPDF={handleExportHistoryPDF} label="Export History" />}
+          </div>
           {priceHistory.length === 0 ? (
             <p style={{ color: '#6b7280', fontSize: 14 }}>No price history yet. Click "Check" to fetch the current price.</p>
           ) : (

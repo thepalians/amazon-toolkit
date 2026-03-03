@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import { useCountry } from '../../context/CountryContext';
+import ExportButton from '../Layout/ExportButton';
+import { exportToCSV, exportToPDF, exportProfitResult } from '../../utils/exportUtils';
 
 const CATEGORIES = [
   'general', 'electronics', 'computers', 'books', 'clothing', 'shoes',
@@ -60,11 +62,24 @@ export default function ProfitCalculator() {
     }
   };
 
+  const handleExportCSV = () => {
+    const { data, columns } = exportProfitResult(result, form);
+    exportToCSV(data, columns, 'profit-calculation');
+  };
+
+  const handleExportPDF = () => {
+    const { data, columns } = exportProfitResult(result, form);
+    exportToPDF(data, columns, 'profit-calculation', 'Profit Calculator Report');
+  };
+
   const sym = currentCountry?.symbol || currentCountry?.currencySymbol || '$';
 
   return (
     <div>
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>💰 Profit Calculator</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700 }}>💰 Profit Calculator</h2>
+        {result && <ExportButton onCSV={handleExportCSV} onPDF={handleExportPDF} />}
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: 20 }}>
         {/* Form */}
@@ -74,19 +89,10 @@ export default function ProfitCalculator() {
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="form-label">Marketplace Country</label>
-              <select
-                className="form-control"
-                name="countryCode"
-                value={form.countryCode}
-                onChange={(e) => {
-                  handleChange(e);
-                  changeCountry(e.target.value);
-                }}
-              >
+              <select className="form-control" name="countryCode" value={form.countryCode}
+                onChange={(e) => { handleChange(e); changeCountry(e.target.value); }}>
                 {countries.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag || ''} {c.name} ({c.currency || c.currencyCode})
-                  </option>
+                  <option key={c.code} value={c.code}>{c.flag || ''} {c.name} ({c.currency || c.currencyCode})</option>
                 ))}
               </select>
             </div>
