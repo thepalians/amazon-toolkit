@@ -4,6 +4,25 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v1.8.0] - 2026-03-03
+### 🔔 Price Alert System (Phase 1)
+- New tool: Price Alert system with 5 alert types
+  - Price Drops Below target
+  - Price Goes Above target
+  - Any Price Change
+  - Out of Stock alert
+  - Back in Stock alert
+- In-app notification center with unread badge
+- Alert auto-triggers on competitor price check
+- Pause/Resume/Delete alerts
+- Notifications tab with mark-as-read
+- Export alerts & notifications as CSV/PDF
+- Database: price_alerts + alert_notifications tables
+- Backend API: Full CRUD + notification endpoints
+- Integrated into Competitor Monitor price check flow
+
+---
+
 ## [v1.7.0] - 2026-03-03
 ### 📋 Listing Quality Score (Phase 1)
 - New tool: Listing Quality Score analyzer

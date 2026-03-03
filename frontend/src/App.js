@@ -28,6 +28,7 @@ import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import ActivatePage from './components/Activate/ActivatePage';
 import KeyManagement from './components/Admin/KeyManagement';
 import ListingScore from './components/ListingScore/ListingScore';
+import PriceAlerts from './components/PriceAlerts/PriceAlerts';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -138,6 +139,16 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <ListingScore />
+          <Route
+            path="/price-alerts"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <PriceAlerts />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
