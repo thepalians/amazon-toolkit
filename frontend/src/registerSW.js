@@ -1,10 +1,11 @@
+// Unregister all service workers to prevent stale cache
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker
-        .register('/amazon-seller-toolkit/sw.js')
-        .then((reg) => console.log('SW registered:', reg.scope))
-        .catch((err) => console.log('SW failed:', err));
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((registration) => {
+        registration.unregister();
+        console.log('Service worker unregistered');
+      });
     });
   }
 }
