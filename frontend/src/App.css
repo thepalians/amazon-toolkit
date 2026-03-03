@@ -375,3 +375,82 @@ tbody tr:hover {
   }
 }
 
+
+/* =============================================
+   MOBILE PWA RESPONSIVE STYLES
+   ============================================= */
+
+/* Mobile sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed !important;
+    left: -260px !important;
+    top: 0 !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    transition: left 0.3s ease !important;
+  }
+  .sidebar.open {
+    left: 0 !important;
+  }
+  .sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .card {
+    padding: 14px !important;
+  }
+  .form-row {
+    flex-direction: column !important;
+  }
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 600px;
+  }
+}
+
+/* PWA Install Banner */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #FF9900, #e88800);
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 9999;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+}
+.pwa-install-banner button {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+}
+.pwa-install-banner button.install {
+  background: #fff;
+  color: #FF9900;
+}
+.pwa-install-banner .dismiss {
+  border: none;
+  font-size: 18px;
+  padding: 0 8px;
+}

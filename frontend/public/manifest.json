@@ -1,0 +1,18 @@
+{
+  "short_name": "Seller Toolkit",
+  "name": "Amazon Seller Toolkit by Palians",
+  "description": "20+ Amazon seller tools: profit calculator, keyword research, listing optimizer, competitor monitor, PPC manager and more.",
+  "icons": [
+    { "src": "favicon.ico", "sizes": "64x64", "type": "image/x-icon" },
+    { "src": "logo192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "logo512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ],
+  "start_url": "/amazon-seller-toolkit/",
+  "display": "standalone",
+  "theme_color": "#FF9900",
+  "background_color": "#0f172a",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

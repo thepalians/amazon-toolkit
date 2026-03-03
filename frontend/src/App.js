@@ -39,6 +39,7 @@ import ABTest from './components/ABTest/ABTest';
 import Financial from './components/Financial/Financial';
 import Teams from './components/Teams/Teams';
 import Webhooks from './components/Webhooks/Webhooks';
+import APIDocs from './components/Docs/APIDocs';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -232,6 +233,16 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <Webhooks />
+          <Route
+            path="/api-docs"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <APIDocs />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
