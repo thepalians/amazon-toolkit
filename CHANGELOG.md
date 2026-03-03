@@ -4,6 +4,33 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v2.0.0] - 2026-03-03
+### 📊 Sales Estimator BSR + Phase 1 Complete!
+- New tool: Sales Estimator from Amazon BSR rank
+- Category-specific estimation curves (20+ categories)
+- Multi-marketplace: US, IN, UK, AE with local data
+- Seasonal sales adjustment by month
+- Sales velocity rating (Low → Very High)
+- Competition level analysis
+- Revenue projections (monthly + yearly)
+- Bulk mode: estimate up to 20 products at once
+- Export results as CSV/PDF
+- Formula transparency: shows calculation used
+
+### 🎉 PHASE 1 COMPLETE — All 10 Core Tools Built!
+1. Product Research (ASIN lookup)
+2. Keyword Research
+3. Listing Optimizer
+4. Competitor Monitor
+5. Profit Calculator
+6. Export CSV/PDF
+7. Listing Quality Score
+8. Price Alert System
+9. FBA Fee Breakdown
+10. Sales Estimator (BSR)
+
+---
+
 ## [v1.9.0] - 2026-03-03
 ### 🏷️ FBA Fee Breakdown (Phase 1)
 - New tool: Detailed FBA Fee Calculator

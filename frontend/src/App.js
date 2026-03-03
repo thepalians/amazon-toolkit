@@ -30,6 +30,7 @@ import KeyManagement from './components/Admin/KeyManagement';
 import ListingScore from './components/ListingScore/ListingScore';
 import PriceAlerts from './components/PriceAlerts/PriceAlerts';
 import FBAFees from './components/FBAFees/FBAFees';
+import SalesEstimator from './components/SalesEstimator/SalesEstimator';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -161,6 +162,16 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <FBAFees />
+          <Route
+            path="/sales-estimator"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <SalesEstimator />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
