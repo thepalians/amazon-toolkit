@@ -17,7 +17,7 @@ export default function Navbar({ onToggleSidebar }) {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const initials = user.fullName
-    ? user.fullName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+    ? user.fullName.split(' ').filter(Boolean).map((n) => n[0]).join('').slice(0, 2).toUpperCase()
     : (user.email || 'U')[0].toUpperCase();
 
   return (

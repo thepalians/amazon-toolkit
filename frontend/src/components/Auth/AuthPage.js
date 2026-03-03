@@ -149,6 +149,6 @@ export default function AuthPage({ mode }) {
 }
 
 const inputWrap = { position: 'relative', display: 'flex', alignItems: 'center' };
-const inputIcon = { position: 'absolute', left: 12, color: '#94a3b8', pointerEvents: 'none' };
+const inputIcon = { position: 'absolute', left: 12, color: 'var(--text-muted)', pointerEvents: 'none' };
 const inputStyle = { paddingLeft: 38 };
 

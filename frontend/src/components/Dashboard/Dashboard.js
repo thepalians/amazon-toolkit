@@ -109,13 +109,15 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
         {tools.map((tool) => {
           const Icon = tool.icon;
+          const handleEnter = (e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; };
+          const handleLeave = (e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; };
           return (
             <Link key={tool.path} to={tool.path} style={{ textDecoration: 'none' }}>
               <div
                 className="card"
                 style={{ cursor: 'pointer', margin: 0, borderLeft: `4px solid ${tool.color}`, transition: 'transform 0.2s, box-shadow 0.2s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; }}
+                onMouseEnter={handleEnter}
+                onMouseLeave={handleLeave}
               >
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: tool.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
                   <Icon size={22} color={tool.color} />

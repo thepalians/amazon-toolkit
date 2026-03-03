@@ -170,18 +170,21 @@ export default function PricingPage() {
         {PLANS.map((plan) => {
           const isCurrent = currentPlan === plan.name;
           const price = yearly ? plan.yearly : plan.monthly;
+          const defaultShadow = plan.popular ? `0 4px 24px ${plan.color}30` : 'var(--shadow-sm)';
+          const handleEnter = (e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; };
+          const handleLeave = (e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = defaultShadow; };
           return (
             <div key={plan.name} style={{
               background: 'var(--bg-surface)',
               borderRadius: 'var(--radius-lg)',
               padding: '28px 24px',
-              boxShadow: plan.popular ? `0 4px 24px ${plan.color}30` : 'var(--shadow-sm)',
+              boxShadow: defaultShadow,
               border: `2px solid ${plan.popular ? plan.color : isCurrent ? plan.color : 'var(--border-color)'}`,
               position: 'relative',
               transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = plan.popular ? `0 4px 24px ${plan.color}30` : 'var(--shadow-sm)'; }}
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleLeave}
             >
               {plan.popular && (
                 <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
