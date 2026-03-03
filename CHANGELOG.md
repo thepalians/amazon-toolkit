@@ -4,6 +4,20 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v1.7.0] - 2026-03-03
+### 📋 Listing Quality Score (Phase 1)
+- New tool: Listing Quality Score analyzer
+- Scores listing across 6 sections: Title, Bullets, Description, Keywords, Images, Pricing
+- Each section has detailed pass/fail checks based on Amazon A10 best practices
+- Overall grade system: A+ to F with color-coded scores
+- Visual progress bars per section
+- Smart recommendations for improvement
+- Export score report as CSV or PDF
+- Added new sidebar navigation item
+- Backend API: POST /api/listing-score/analyze
+
+---
+
 ## [v1.6.0] - 2026-03-03
 ### 📤 Export CSV/PDF Feature (Phase 1)
 - Added universal export utility (`exportUtils.js`) for CSV & PDF generation

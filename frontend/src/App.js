@@ -27,6 +27,7 @@ import TermsOfService from './components/Legal/TermsOfService';
 import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import ActivatePage from './components/Activate/ActivatePage';
 import KeyManagement from './components/Admin/KeyManagement';
+import ListingScore from './components/ListingScore/ListingScore';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
