@@ -4,6 +4,22 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v2.3.0] - 2026-03-03
+### ⭐ Phase 2: Review Analyzer
+- New tool: Amazon Review Analyzer
+- Scrapes product reviews (up to 3 pages)
+- Sentiment analysis: Positive/Negative/Neutral
+- Rating distribution bar chart
+- Sentiment pie chart
+- Theme extraction: Build Quality, Value, Ease of Use, etc.
+- Top keyword frequency analysis
+- Strengths & Weaknesses identification
+- Individual review table with sentiment tags
+- Export reviews as CSV/PDF
+- Multi-marketplace support
+
+---
+
 ## [v2.2.0] - 2026-03-03
 ### 📧 Phase 2: Email Notifications
 - Email notification service (Nodemailer + SMTP)
