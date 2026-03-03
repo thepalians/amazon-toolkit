@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { FiGrid, FiDollarSign, FiSearch, FiEdit3, FiEye, FiCreditCard, FiShoppingCart, FiKey, FiCheckSquare, FiBell, FiPackage, FiTrendingUp, FiMessageSquare, FiBox, FiTruck, FiTarget, FiLayers, FiFileText, FiUsers, FiLink, FiBook, FiMessageCircle, FiNavigation, FiGlobe } from 'react-icons/fi';
+import { FiGrid, FiDollarSign, FiSearch, FiEdit3, FiEye, FiCreditCard, FiShoppingCart, FiKey, FiCheckSquare, FiBell, FiPackage, FiTrendingUp, FiMessageSquare, FiBox, FiTruck, FiTarget, FiLayers, FiFileText, FiUsers, FiLink, FiBook, FiMessageCircle, FiNavigation, FiGlobe, FiZap, FiShield } from 'react-icons/fi';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: FiGrid },
@@ -25,6 +25,8 @@ const navItems = [
   { path: '/chat', label: 'AI Assistant', icon: FiMessageCircle },
   { path: '/rank-tracker', label: 'Rank Tracker', icon: FiNavigation },
   { path: '/sourcing', label: 'Sourcing Calc', icon: FiGlobe },
+  { path: '/bulk', label: 'Bulk Operations', icon: FiZap },
+  { path: '/admin-panel', label: 'Admin Panel', icon: FiShield },
   { path: '/activate', label: 'Activate Key', icon: FiKey },
 ];
 

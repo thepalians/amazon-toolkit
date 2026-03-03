@@ -44,6 +44,8 @@ import Landing from './components/Landing/Landing';
 import Chat from './components/Chat/Chat';
 import RankTrackerUI from './components/RankTracker/RankTracker';
 import Sourcing from './components/Sourcing/Sourcing';
+import BulkOps from './components/BulkOps/BulkOps';
+import AdminPanel from './components/AdminPanel/AdminPanel';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -266,6 +268,26 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <Sourcing />
+          <Route
+            path="/bulk"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <BulkOps />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin-panel"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <AdminPanel />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }

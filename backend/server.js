@@ -77,6 +77,8 @@ app.use("/api/webhooks", require("./routes/webhook"));
 app.use("/api/chat", require("./routes/chat"));
 app.use("/api/rank-tracker", require("./routes/rankTracker"));
 app.use("/api/sourcing", require("./routes/sourcing"));
+app.use("/api/bulk", require("./routes/bulk"));
+app.use("/api/admin-panel", require("./routes/adminPanel"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');
