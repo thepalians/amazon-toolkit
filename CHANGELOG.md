@@ -4,6 +4,22 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v3.2.0] - 2026-03-03
+### Phase 3: A/B Test Manager + Financial Reports
+- A/B Test Manager: test titles, images, bullets, prices
+- Statistical significance calculator (Z-test)
+- Auto-detects winner with confidence percentage
+- Variant comparison cards with CTR and conversion rates
+- Financial Reports: P&L tracking
+- Monthly P&L chart (revenue vs expenses vs profit)
+- Record types: revenue, expense, refund, ad spend, FBA, COGS
+- Yearly and monthly filtering
+- Profit margin calculation
+- Bulk record import support
+- Export both tools as CSV/PDF
+
+---
+
 ## [v3.0.0] - 2026-03-03
 ### Phase 3: PPC Campaign Manager
 - New tool: Amazon PPC Campaign Manager

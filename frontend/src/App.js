@@ -35,6 +35,8 @@ import ReviewAnalyzer from './components/ReviewAnalyzer/ReviewAnalyzer';
 import Inventory from './components/Inventory/Inventory';
 import Suppliers from './components/Suppliers/Suppliers';
 import PPCManager from './components/PPC/PPCManager';
+import ABTest from './components/ABTest/ABTest';
+import Financial from './components/Financial/Financial';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -196,6 +198,26 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <PPCManager />
+          <Route
+            path="/ab-test"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <ABTest />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/financial"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <Financial />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
