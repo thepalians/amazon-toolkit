@@ -143,6 +143,15 @@ export default function AuthPage({ mode }) {
             <>Already have an account? <Link to="/login" style={{ color: '#FF9900', fontWeight: 600 }}>Sign In</Link></>
           )}
         </p>
+
+        {mode === 'register' && (
+          <p style={{ textAlign: 'center', marginTop: 12, fontSize: 12, color: '#94a3b8' }}>
+            By registering, you agree to our{' '}
+            <Link to="/terms" style={{ color: '#FF9900' }}>Terms of Service</Link>
+            {' '}and{' '}
+            <Link to="/privacy" style={{ color: '#FF9900' }}>Privacy Policy</Link>
+          </p>
+        )}
       </div>
     </div>
   );

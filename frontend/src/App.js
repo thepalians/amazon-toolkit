@@ -23,6 +23,8 @@ import PricingPage from './components/Subscription/PricingPage';
 import AdminLicenseKeys from './components/Admin/AdminLicenseKeys';
 import AdminPlans from './components/Admin/AdminPlans';
 import AdminSubscriptions from './components/Admin/AdminSubscriptions';
+import TermsOfService from './components/Legal/TermsOfService';
+import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -116,6 +118,10 @@ export default function App() {
               </PrivateRoute>
             }
           />
+
+          {/* Legal routes (public) */}
+          <Route path="/terms" element={<AppLayout><TermsOfService /></AppLayout>} />
+          <Route path="/privacy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />
 
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
