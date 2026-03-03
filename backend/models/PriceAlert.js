@@ -69,6 +69,7 @@ const PriceAlert = sequelize.define('PriceAlert', {
   },
 }, {
   tableName: 'price_alerts',
+  underscored: true,
 });
 
 const AlertNotification = sequelize.define('AlertNotification', {
@@ -119,6 +120,7 @@ const AlertNotification = sequelize.define('AlertNotification', {
   },
 }, {
   tableName: 'alert_notifications',
+  underscored: true,
 });
 
 // Associations
