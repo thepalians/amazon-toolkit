@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { FiGrid, FiDollarSign, FiSearch, FiEdit3, FiEye, FiCreditCard, FiShoppingCart, FiKey, FiCheckSquare, FiBell } from 'react-icons/fi';
+import { FiGrid, FiDollarSign, FiSearch, FiEdit3, FiEye, FiCreditCard, FiShoppingCart, FiKey, FiCheckSquare, FiBell, FiPackage } from 'react-icons/fi';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: FiGrid },
@@ -11,6 +11,7 @@ const navItems = [
   { path: '/pricing', label: 'Pricing', icon: FiCreditCard },
   { path: '/listing-score', label: 'Listing Score', icon: FiCheckSquare },
   { path: '/price-alerts', label: 'Price Alerts', icon: FiBell },
+  { path: '/fba-fees', label: 'FBA Fee Breakdown', icon: FiPackage },
   { path: '/activate', label: 'Activate Key', icon: FiKey },
 ];
 

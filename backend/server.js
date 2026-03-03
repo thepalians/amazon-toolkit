@@ -63,6 +63,7 @@ app.get('/api/payments/paypal/config', (req, res) => {
 app.use('/api/payments', require('./routes/payments'));
 app.use("/api/listing-score", require("./routes/listingScore"));
 app.use("/api/alerts", require("./routes/priceAlert"));
+app.use("/api/fba-fees", require("./routes/fbaFees"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');

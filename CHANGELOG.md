@@ -4,6 +4,21 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v1.9.0] - 2026-03-03
+### 🏷️ FBA Fee Breakdown (Phase 1)
+- New tool: Detailed FBA Fee Calculator
+- Fee types: Referral, Fulfillment, Storage, Closing, Tax
+- Size tier auto-detection by product dimensions
+- Multi-country support: US, IN, UK, AE with local fee rates
+- 25+ product categories with correct referral rates
+- Storage period options: Standard, Peak, Long-Term
+- Visual cost distribution bars
+- Profit, Margin, ROI summary card
+- Export fee breakdown as CSV or PDF
+- Backend API: /api/fba-fees/calculate, /categories, /size-tiers
+
+---
+
 ## [v1.8.0] - 2026-03-03
 ### 🔔 Price Alert System (Phase 1)
 - New tool: Price Alert system with 5 alert types
