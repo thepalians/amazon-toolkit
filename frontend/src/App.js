@@ -41,6 +41,7 @@ import Teams from './components/Teams/Teams';
 import Webhooks from './components/Webhooks/Webhooks';
 import APIDocs from './components/Docs/APIDocs';
 import Landing from './components/Landing/Landing';
+import Chat from './components/Chat/Chat';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -241,6 +242,16 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <APIDocs />
+          <Route
+            path="/chat"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <Chat />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
