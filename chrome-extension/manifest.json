@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Amazon Seller Toolkit",
+  "version": "1.0.0",
+  "description": "Quick ASIN lookup, profit calculator, listing score and BSR estimator — right from any Amazon product page.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://www.amazon.com/*", "https://www.amazon.in/*", "https://www.amazon.co.uk/*", "https://www.amazon.ae/*", "https://www.amazon.de/*", "https://www.amazon.fr/*", "https://www.amazon.ca/*", "https://www.amazon.co.jp/*", "https://www.amazon.com.au/*"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.amazon.com/dp/*", "https://www.amazon.com/*/dp/*", "https://www.amazon.in/dp/*", "https://www.amazon.in/*/dp/*", "https://www.amazon.co.uk/dp/*", "https://www.amazon.co.uk/*/dp/*", "https://www.amazon.ae/dp/*", "https://www.amazon.ae/*/dp/*", "https://www.amazon.de/dp/*", "https://www.amazon.de/*/dp/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

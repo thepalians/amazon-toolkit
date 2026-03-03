@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 380px; min-height: 400px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; color: #111; }
+    .header { background: linear-gradient(135deg, #FF9900, #e88800); padding: 14px 16px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 16px; font-weight: 800; }
+    .header .badge { font-size: 10px; background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 10px; }
+    .tabs { display: flex; background: #fff; border-bottom: 1px solid #e5e7eb; }
+    .tab { flex: 1; padding: 10px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab.active { color: #FF9900; border-bottom-color: #FF9900; }
+    .tab:hover { background: #fef3c7; }
+    .content { padding: 14px; }
+    .card { background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 12px; border: 1px solid #e5e7eb; }
+    .card-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .form-group { margin-bottom: 10px; }
+    .form-label { font-size: 11px; font-weight: 600; color: #6b7280; margin-bottom: 4px; display: block; }
+    .form-control { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; outline: none; transition: border 0.2s; }
+    .form-control:focus { border-color: #FF9900; }
+    .form-row { display: flex; gap: 8px; }
+    .form-row .form-group { flex: 1; }
+    select.form-control { appearance: auto; }
+    .btn { padding: 8px 14px; border: none; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%; transition: all 0.2s; }
+    .btn-primary { background: #FF9900; color: #fff; }
+    .btn-primary:hover { background: #e88800; }
+    .btn-primary:disabled { opacity: 0.5; }
+    .result { margin-top: 12px; }
+    .stat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 12px; }
+    .stat-label { color: #6b7280; }
+    .stat-value { font-weight: 700; }
+    .stat-value.green { color: #22c55e; }
+    .stat-value.red { color: #ef4444; }
+    .stat-value.orange { color: #FF9900; }
+    .big-number { text-align: center; padding: 12px; }
+    .big-number .value { font-size: 28px; font-weight: 800; }
+    .big-number .label { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .loader { display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .login-box { text-align: center; padding: 40px 20px; }
+    .login-box h3 { margin-bottom: 8px; }
+    .login-box p { font-size: 12px; color: #6b7280; margin-bottom: 16px; }
+    .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+    .footer { text-align: center; padding: 8px; font-size: 10px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+    .alert { padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 10px; }
+    .alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .alert-success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛒 Amazon Seller Toolkit</h1>
+    <span class="badge" id="statusBadge">Loading...</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="lookup">🔍 ASIN</div>
+    <div class="tab" data-tab="profit">💰 Profit</div>
+    <div class="tab" data-tab="bsr">📊 BSR</div>
+    <div class="tab" data-tab="settings">⚙️</div>
+  </div>
+
+  <!-- ASIN Lookup -->
+  <div class="content" id="tab-lookup">
+    <div class="card">
+      <div class="card-title">🔍 Quick ASIN Lookup</div>
+      <div class="form-group">
+        <input class="form-control" id="asinInput" placeholder="Enter ASIN or paste Amazon URL" />
+      </div>
+      <button class="btn btn-primary" id="lookupBtn">Search</button>
+    </div>
+    <div id="lookupResult"></div>
+    <div id="autoDetect" style="display:none;" class="card">
+      <div class="card-title">📦 Detected on Page</div>
+      <div id="autoDetectContent"></div>
+    </div>
+  </div>
+
+  <!-- Profit Calculator -->
+  <div class="content" id="tab-profit" style="display:none;">
+    <div class="card">
+      <div class="card-title">💰 Quick Profit Calculator</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Sell Price</label>
+          <input class="form-control" id="sellPrice" type="number" step="0.01" placeholder="29.99" /></div>
+        <div class="form-group"><label class="form-label">Cost Price</label>
+          <input class="form-control" id="costPrice" type="number" step="0.01" placeholder="8.00" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">FBA Fee (%)</label>
+          <input class="form-control" id="fbaFee" type="number" value="15" /></div>
+        <div class="form-group"><label class="form-label">Shipping</label>
+          <input class="form-control" id="shipping" type="number" step="0.01" value="3" /></div>
+      </div>
+      <button class="btn btn-primary" id="calcProfitBtn">Calculate</button>
+    </div>
+    <div id="profitResult"></div>
+  </div>
+
+  <!-- BSR Estimator -->
+  <div class="content" id="tab-bsr" style="display:none;">
+    <div class="card">
+      <div class="card-title">📊 BSR Sales Estimator</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">BSR Rank</label>
+          <input class="form-control" id="bsrInput" type="number" placeholder="5000" /></div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-control" id="bsrCategory">
+            <option>All Departments</option><option>Electronics</option><option>Home & Kitchen</option>
+            <option>Clothing</option><option>Health & Household</option><option>Sports & Outdoors</option>
+            <option>Beauty & Personal Care</option><option>Toys & Games</option><option>Books</option>
+          </select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Product Price ($)</label>
+        <input class="form-control" id="bsrPrice" type="number" step="0.01" placeholder="29.99" /></div>
+      <button class="btn btn-primary" id="bsrBtn">Estimate Sales</button>
+    </div>
+    <div id="bsrResult"></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="content" id="tab-settings" style="display:none;">
+    <div class="card">
+      <div class="card-title">⚙️ Settings</div>
+      <div class="form-group"><label class="form-label">API Base URL</label>
+        <input class="form-control" id="apiUrl" value="https://palians.com/amazon-seller-toolkit/api" /></div>
+      <div class="form-group"><label class="form-label">Auth Token</label>
+        <input class="form-control" id="authToken" type="password" placeholder="Paste your JWT token" /></div>
+      <button class="btn btn-primary" id="saveSettings">Save Settings</button>
+      <div id="settingsMsg" style="margin-top: 8px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔗 Quick Links</div>
+      <div class="settings-row"><span>Full Dashboard</span><a href="https://palians.com/amazon-seller-toolkit" target="_blank" style="color:#FF9900;font-weight:700;font-size:12px;">Open →</a></div>
+      <div class="settings-row"><span>Keyword Research</span><a href="https://palians.com/amazon-seller-toolkit/keywords" target="_blank" style="color:#FF9900;font-weight:700;font-size:12px;">Open →</a></div>
+      <div class="settings-row"><span>Listing Optimizer</span><a href="https://palians.com/amazon-seller-toolkit/listing" target="_blank" style="color:#FF9900;font-weight:700;font-size:12px;">Open →</a></div>
+      <div class="settings-row"><span>Price Alerts</span><a href="https://palians.com/amazon-seller-toolkit/price-alerts" target="_blank" style="color:#FF9900;font-weight:700;font-size:12px;">Open →</a></div>
+    </div>
+  </div>
+
+  <div class="footer">Amazon Seller Toolkit v1.0 — by Palians</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

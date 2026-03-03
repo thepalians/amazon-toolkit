@@ -4,6 +4,19 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v4.0.0] - 2026-03-03
+### Phase 4: Chrome Extension
+- Chrome Extension with Manifest V3
+- Popup with 4 tabs: ASIN Lookup, Profit Calculator, BSR Estimator, Settings
+- Content script: floating overlay on Amazon product pages
+- Auto-detects ASIN from current Amazon page
+- Offline profit calculator and BSR estimator
+- Quick links to full dashboard
+- Extracts price, BSR, title from Amazon pages
+- Platform-formatted Slack/Discord/Teams payloads
+
+---
+
 ## [v3.4.0] - 2026-03-03
 ### Phase 3: Multi-user Teams + Webhook Integrations
 - Teams: Create teams, invite members by email
