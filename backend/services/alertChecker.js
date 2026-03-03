@@ -1,111 +1,127 @@
+const { PriceAlert, AlertNotification } = require('../models/PriceAlert');
+const { CompetitorTracking } = require('../models/Competitor');
+const emailService = require('./emailService');
+const { Op } = require('sequelize');
+
 /**
  * =============================================
  * ALERT CHECKER SERVICE
  * =============================================
- * Called after every price check to evaluate
- * if any alerts should be triggered.
+ * Checks all active alerts against current price
+ * Creates notifications + sends emails when triggered
  * =============================================
  */
 
-const { PriceAlert, AlertNotification } = require('../models/PriceAlert');
-const { Op } = require('sequelize');
+async function checkAlerts(trackingId, currentPrice, currency, stockStatus) {
+  const tracking = await CompetitorTracking.findByPk(trackingId);
+  if (!tracking) return [];
 
-async function checkAlerts(trackingId, newPrice, currency, stockStatus) {
-  try {
-    const alerts = await PriceAlert.findAll({
-      where: {
-        tracking_id: trackingId,
-        is_active: true,
-        is_triggered: false,
-      },
-    });
+  const alerts = await PriceAlert.findAll({
+    where: {
+      tracking_id: trackingId,
+      is_active: true,
+      is_triggered: false,
+    },
+  });
 
-    const triggered = [];
+  const triggered = [];
 
-    for (const alert of alerts) {
-      let shouldTrigger = false;
-      let notifType = 'price_change';
-      let title = '';
-      let message = '';
+  for (const alert of alerts) {
+    let shouldTrigger = false;
+    let message = '';
 
-      const priceNum = parseFloat(newPrice);
-      const targetNum = parseFloat(alert.target_price);
-
-      switch (alert.alert_type) {
-        case 'below':
-          if (priceNum <= targetNum) {
-            shouldTrigger = true;
-            notifType = 'price_drop';
-            title = `🔔 Price Drop Alert: ${alert.asin}`;
-            message = `Price dropped to ${currency}${priceNum} (target: ${currency}${targetNum})`;
-          }
-          break;
-
-        case 'above':
-          if (priceNum >= targetNum) {
-            shouldTrigger = true;
-            notifType = 'price_increase';
-            title = `📈 Price Increase Alert: ${alert.asin}`;
-            message = `Price went up to ${currency}${priceNum} (target: ${currency}${targetNum})`;
-          }
-          break;
-
-        case 'change':
+    switch (alert.alert_type) {
+      case 'below':
+        if (currentPrice > 0 && currentPrice <= alert.target_price) {
           shouldTrigger = true;
-          notifType = 'price_change';
-          title = `💰 Price Changed: ${alert.asin}`;
-          message = `Current price: ${currency}${priceNum}`;
-          break;
-
-        case 'out_of_stock':
-          if (stockStatus && stockStatus.toLowerCase().includes('out')) {
-            shouldTrigger = true;
-            notifType = 'out_of_stock';
-            title = `⚠️ Out of Stock: ${alert.asin}`;
-            message = `Product is now out of stock.`;
-          }
-          break;
-
-        case 'back_in_stock':
-          if (stockStatus && stockStatus.toLowerCase().includes('in stock') && !stockStatus.toLowerCase().includes('out')) {
-            shouldTrigger = true;
-            notifType = 'back_in_stock';
-            title = `✅ Back in Stock: ${alert.asin}`;
-            message = `Product is back in stock at ${currency}${priceNum}`;
-          }
-          break;
-      }
-
-      if (shouldTrigger) {
-        // Mark alert as triggered
-        alert.is_triggered = true;
-        alert.triggered_at = new Date();
-        alert.triggered_price = priceNum;
-        await alert.save();
-
-        // Create notification
-        if (alert.notify_in_app) {
-          await AlertNotification.create({
-            user_id: alert.user_id,
-            alert_id: alert.id,
-            type: notifType,
-            title,
-            message,
-            asin: alert.asin,
-            new_price: priceNum,
-            currency,
-          });
+          message = `Price dropped to ${currency}${currentPrice} (target: ${currency}${alert.target_price})`;
         }
+        break;
 
-        triggered.push({ alertId: alert.id, type: notifType, title });
-      }
+      case 'above':
+        if (currentPrice > 0 && currentPrice >= alert.target_price) {
+          shouldTrigger = true;
+          message = `Price rose to ${currency}${currentPrice} (target: ${currency}${alert.target_price})`;
+        }
+        break;
+
+      case 'change':
+        if (alert.last_checked_price && alert.last_checked_price !== currentPrice) {
+          shouldTrigger = true;
+          const diff = currentPrice - alert.last_checked_price;
+          const dir = diff > 0 ? '📈 increased' : '📉 decreased';
+          message = `Price ${dir} from ${currency}${alert.last_checked_price} to ${currency}${currentPrice}`;
+        }
+        break;
+
+      case 'out_of_stock':
+        if (stockStatus && stockStatus.toLowerCase().includes('out')) {
+          shouldTrigger = true;
+          message = `Product is now Out of Stock`;
+        }
+        break;
+
+      case 'back_in_stock':
+        if (stockStatus && !stockStatus.toLowerCase().includes('out') && alert.last_stock_status === 'Out of Stock') {
+          shouldTrigger = true;
+          message = `Product is Back in Stock at ${currency}${currentPrice}`;
+        }
+        break;
     }
 
-    return triggered;
-  } catch (err) {
-    console.error('Alert checker error:', err);
-    return [];
+    // Update last checked values
+    await alert.update({
+      last_checked_price: currentPrice,
+      last_stock_status: stockStatus,
+    });
+
+    if (shouldTrigger) {
+      await alert.update({
+        is_triggered: true,
+        triggered_at: new Date(),
+        triggered_price: currentPrice,
+      });
+
+      // Create in-app notification
+      if (alert.notify_in_app !== false) {
+        await AlertNotification.create({
+          user_id: alert.user_id,
+          alert_id: alert.id,
+          title: `🔔 Alert: ${tracking.asin}`,
+          message,
+          asin: tracking.asin,
+          new_price: currentPrice,
+          currency,
+        });
+      }
+
+      // 📧 Send email notification
+      if (alert.notify_email) {
+        try {
+          // Get user email
+          const { User } = require('../models/User');
+          const user = await User.findByPk(alert.user_id);
+          if (user && user.email) {
+            await emailService.sendPriceAlert(user.email, {
+              asin: tracking.asin,
+              productTitle: tracking.product_title,
+              alertType: alert.alert_type,
+              targetPrice: alert.target_price,
+              currentPrice,
+              currency,
+              url: `https://www.amazon.com/dp/${tracking.asin}`,
+            });
+          }
+        } catch (emailErr) {
+          console.error('Email send failed (non-blocking):', emailErr.message);
+        }
+      }
+
+      triggered.push({ alertId: alert.id, type: alert.alert_type, message });
+    }
   }
+
+  return triggered;
 }
 
 module.exports = { checkAlerts };

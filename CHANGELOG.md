@@ -4,6 +4,21 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v2.2.0] - 2026-03-03
+### 📧 Phase 2: Email Notifications
+- Email notification service (Nodemailer + SMTP)
+- Beautiful HTML email templates:
+  - Price Alert emails with product details
+  - Welcome email with all tools listed
+- Auto-sends email when price alert triggers
+- Email toggle per alert (notify_email flag)
+- Gmail SMTP support (App Password)
+- Graceful fallback: logs to console when disabled
+- EMAIL_ENABLED=false by default (safe)
+- Alert checker upgraded with email hook
+
+---
+
 ## [v2.1.0] - 2026-03-03
 ### 📊 Phase 2: Dashboard Analytics
 - Upgraded Dashboard with real-time analytics
