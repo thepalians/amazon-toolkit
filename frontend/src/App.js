@@ -132,6 +132,16 @@ export default function App() {
             }
           />
 
+          <Route
+            path="/listing-score"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <ListingScore />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
           {/* Legal routes (public) */}
           <Route path="/terms" element={<AppLayout><TermsOfService /></AppLayout>} />
           <Route path="/privacy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />
