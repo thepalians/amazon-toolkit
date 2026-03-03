@@ -75,6 +75,8 @@ app.use("/api/financial", require("./routes/financial"));
 app.use("/api/teams", require("./routes/team"));
 app.use("/api/webhooks", require("./routes/webhook"));
 app.use("/api/chat", require("./routes/chat"));
+app.use("/api/rank-tracker", require("./routes/rankTracker"));
+app.use("/api/sourcing", require("./routes/sourcing"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');

@@ -42,6 +42,8 @@ import Webhooks from './components/Webhooks/Webhooks';
 import APIDocs from './components/Docs/APIDocs';
 import Landing from './components/Landing/Landing';
 import Chat from './components/Chat/Chat';
+import RankTrackerUI from './components/RankTracker/RankTracker';
+import Sourcing from './components/Sourcing/Sourcing';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -248,6 +250,26 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <Chat />
+          <Route
+            path="/rank-tracker"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <RankTrackerUI />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/sourcing"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <Sourcing />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }
