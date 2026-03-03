@@ -40,6 +40,7 @@ import Financial from './components/Financial/Financial';
 import Teams from './components/Teams/Teams';
 import Webhooks from './components/Webhooks/Webhooks';
 import APIDocs from './components/Docs/APIDocs';
+import Landing from './components/Landing/Landing';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -71,6 +72,7 @@ export default function App() {
         <CountryProvider>
           <Routes>
           {/* Regular user routes */}
+          <Route path="/landing" element={<Landing />} />
           <Route path="/login" element={<AuthPage mode="login" />} />
           <Route path="/register" element={<AuthPage mode="register" />} />
           <Route
