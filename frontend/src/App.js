@@ -165,6 +165,15 @@ export default function App() {
               </PrivateRoute>
             }
           />
+
+          {/* Admin routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
             }
           >
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
