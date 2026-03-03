@@ -134,18 +134,27 @@ export default function App() {
             }
           />
 
+
           <Route
             path="/listing-score"
             element={
               <PrivateRoute>
                 <AppLayout>
                   <ListingScore />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/price-alerts"
             element={
               <PrivateRoute>
                 <AppLayout>
                   <PriceAlerts />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/fba-fees"
             element={
@@ -156,26 +165,6 @@ export default function App() {
               </PrivateRoute>
             }
           />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-          {/* Legal routes (public) */}
-          <Route path="/terms" element={<AppLayout><TermsOfService /></AppLayout>} />
-          <Route path="/privacy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />
-
-          {/* Admin routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminLayout />
-              </AdminRoute>
             }
           >
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
