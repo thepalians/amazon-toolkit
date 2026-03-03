@@ -44,6 +44,7 @@ app.use('/api/', limiter);
 
 // ---- Routes ----
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/activate', require('./routes/activate'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/profit', require('./routes/profit'));
 app.use('/api/keywords', require('./routes/keywords'));

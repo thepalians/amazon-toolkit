@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { FiGrid, FiUsers, FiAward, FiKey, FiTrendingUp, FiTool, FiSettings, FiList, FiShoppingCart, FiLogOut, FiUser } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiAward, FiKey, FiTrendingUp, FiTool, FiSettings, FiList, FiShoppingCart, FiLogOut, FiUser, FiTag } from 'react-icons/fi';
 
 const navItems = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: FiGrid },
   { path: '/admin/users', label: 'Users', icon: FiUsers },
   { path: '/admin/plans', label: 'Plans', icon: FiAward },
   { path: '/admin/license-keys', label: 'License Keys', icon: FiKey },
+  { path: '/admin/activation-keys', label: 'Activation Keys', icon: FiTag },
   { path: '/admin/subscriptions', label: 'Subscriptions', icon: FiTrendingUp },
   { path: '/admin/api-keys', label: 'API Keys', icon: FiTool },
   { path: '/admin/settings', label: 'Settings', icon: FiSettings },

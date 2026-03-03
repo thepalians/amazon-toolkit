@@ -25,6 +25,8 @@ import AdminPlans from './components/Admin/AdminPlans';
 import AdminSubscriptions from './components/Admin/AdminSubscriptions';
 import TermsOfService from './components/Legal/TermsOfService';
 import PrivacyPolicy from './components/Legal/PrivacyPolicy';
+import ActivatePage from './components/Activate/ActivatePage';
+import KeyManagement from './components/Admin/KeyManagement';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -118,6 +120,16 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/activate"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <ActivatePage />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
 
           {/* Legal routes (public) */}
           <Route path="/terms" element={<AppLayout><TermsOfService /></AppLayout>} />
@@ -142,6 +154,7 @@ export default function App() {
             <Route path="plans" element={<AdminPlans />} />
             <Route path="license-keys" element={<AdminLicenseKeys />} />
             <Route path="subscriptions" element={<AdminSubscriptions />} />
+            <Route path="activation-keys" element={<KeyManagement />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
