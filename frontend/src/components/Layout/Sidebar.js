@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { FiGrid, FiDollarSign, FiSearch, FiEdit3, FiEye, FiCreditCard, FiShoppingCart } from 'react-icons/fi';
 
 const navItems = [
@@ -52,6 +52,18 @@ export default function Sidebar({ isOpen }) {
           );
         })}
       </nav>
+
+      {/* Footer */}
+      {isOpen && (
+        <div style={styles.footer}>
+          <div style={styles.footerLinks}>
+            <Link to="/terms" style={styles.footerLink}>Terms</Link>
+            <span style={{ color: 'rgba(148,163,184,0.4)' }}>·</span>
+            <Link to="/privacy" style={styles.footerLink}>Privacy</Link>
+          </div>
+          <p style={styles.footerCopy}>© 2026 Palians</p>
+        </div>
+      )}
     </aside>
   );
 }
@@ -119,6 +131,27 @@ const styles = {
     background: 'rgba(255,153,0,0.12)',
     color: '#FF9900',
     borderLeft: '3px solid #FF9900',
+  },
+  footer: {
+    padding: '12px 16px',
+    borderTop: '1px solid rgba(255,255,255,0.07)',
+  },
+  footerLinks: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  footerLink: {
+    color: 'var(--sidebar-text)',
+    fontSize: 11,
+    textDecoration: 'none',
+    opacity: 0.8,
+  },
+  footerCopy: {
+    color: 'var(--sidebar-text)',
+    fontSize: 11,
+    opacity: 0.6,
   },
 };
 
