@@ -52,6 +52,13 @@ app.use('/api/listing', require('./routes/listing'));
 app.use('/api/competitor', require('./routes/competitor'));
 app.use('/api/plans', require('./routes/plans'));
 app.use('/api/subscription', require('./routes/subscription'));
+app.use('/api/currency', require('./routes/currency'));
+
+// ---- PayPal client ID (public, must be before payment router with auth) ----
+app.get('/api/payments/paypal/config', (req, res) => {
+  res.json({ success: true, client_id: process.env.PAYPAL_CLIENT_ID || null });
+});
+
 app.use('/api/payments', require('./routes/payments'));
 
 // ---- Country config endpoint (public) ----

@@ -14,6 +14,7 @@ const Payment = require('../models/Payment');
 const UserSubscription = require('../models/UserSubscription');
 const User = require('../models/User');
 const SubscriptionPlan = require('../models/SubscriptionPlan');
+const { convertINRtoUSD } = require('../services/currencyService');
 
 router.use(authMiddleware);
 
@@ -161,11 +162,14 @@ router.post('/paypal/create-order', async (req, res) => {
     });
     const accessToken = tokenRes.data.access_token;
 
-    // Create PayPal order (INR -> USD approximate, or use USD as currency)
+    // Convert INR to USD using live rates
+    const usdAmount = await convertINRtoUSD(amount);
+
+    // Create PayPal order (charges in USD)
     const orderRes = await axios.post(`${baseUrl}/v2/checkout/orders`, {
       intent: 'CAPTURE',
       purchase_units: [{
-        amount: { currency_code: 'USD', value: (amount / 83).toFixed(2) }, // rough INR to USD
+        amount: { currency_code: 'USD', value: usdAmount.toFixed(2) },
         description: `${plan.display_name} - ${duration} subscription`,
       }],
     }, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } });

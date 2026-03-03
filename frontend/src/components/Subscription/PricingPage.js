@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiCheck, FiX, FiKey } from 'react-icons/fi';
 import api from '../../services/api';
+import { useCountry } from '../../context/CountryContext';
 
 const PLANS = [
   {
@@ -43,7 +44,16 @@ const PLANS = [
   },
 ];
 
+const CURRENCY_SYMBOLS = {
+  USD: '$', EUR: '€', GBP: '£', AED: 'د.إ', CAD: 'C$',
+  AUD: 'A$', JPY: '¥', SGD: 'S$', SAR: 'ر.س', INR: '₹',
+};
+
 export default function PricingPage() {
+  const { currentCountry } = useCountry();
+  const userCurrency = currentCountry?.currency || 'USD';
+  const isINR = userCurrency === 'INR';
+
   const [yearly, setYearly] = useState(false);
   const [currentPlan, setCurrentPlan] = useState('free');
   const [subscription, setSubscription] = useState(null);
@@ -52,6 +62,12 @@ export default function PricingPage() {
   const [keyError, setKeyError] = useState('');
   const [activating, setActivating] = useState(false);
   const [payingPlan, setPayingPlan] = useState(null);
+  const [rates, setRates] = useState(null);
+  const [paypalLoaded, setPaypalLoaded] = useState(false);
+
+  const paypalContainerRefs = useRef({});
+  const paypalPaymentIds = useRef({});
+  const paypalButtonInstances = useRef({});
 
   useEffect(() => {
     api.get('/subscription/current')
@@ -62,14 +78,108 @@ export default function PricingPage() {
       .catch(() => {});
   }, []);
 
+  // Fetch exchange rates
   useEffect(() => {
+    api.get('/currency/rates')
+      .then((res) => {
+        if (res.data?.rates) setRates(res.data.rates);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Load Razorpay script (for INR users)
+  useEffect(() => {
+    if (!isINR) return;
     if (document.getElementById('razorpay-script')) return;
     const script = document.createElement('script');
     script.id = 'razorpay-script';
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     document.body.appendChild(script);
-  }, []);
+  }, [isINR]);
+
+  // Load PayPal SDK (for non-INR users)
+  useEffect(() => {
+    if (isINR) return;
+    if (document.getElementById('paypal-sdk')) {
+      if (window.paypal) setPaypalLoaded(true);
+      return;
+    }
+
+    api.get('/payments/paypal/config')
+      .then((res) => {
+        const clientId = res.data?.client_id;
+        if (!clientId) return;
+
+        const script = document.createElement('script');
+        script.id = 'paypal-sdk';
+        script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+        script.async = true;
+        script.onload = () => setPaypalLoaded(true);
+        document.body.appendChild(script);
+      })
+      .catch(() => {});
+  }, [isINR]);
+
+  // Render PayPal buttons when SDK is ready
+  useEffect(() => {
+    if (isINR || !paypalLoaded || !window.paypal) return;
+
+    PLANS.forEach((plan) => {
+      if (plan.name === 'free') return;
+      const container = paypalContainerRefs.current[plan.name];
+      if (!container) return;
+
+      // Close/clean previous button instance
+      if (paypalButtonInstances.current[plan.name]) {
+        try { paypalButtonInstances.current[plan.name].close(); } catch (err) { /* ignore close errors */ }
+      }
+      container.innerHTML = '';
+
+      const planRef = plan;
+      const buttons = window.paypal.Buttons({
+        style: { layout: 'horizontal', color: 'gold', shape: 'rect', label: 'buynow', height: 40, tagline: false },
+        createOrder: async () => {
+          setPayingPlan(planRef.name);
+          try {
+            const res = await api.post('/payments/paypal/create-order', {
+              plan_name: planRef.name,
+              duration: yearly ? 'yearly' : 'monthly',
+            });
+            paypalPaymentIds.current[planRef.name] = res.data.payment_id;
+            return res.data.order_id;
+          } catch (err) {
+            setPayingPlan(null);
+            alert(err.response?.data?.message || 'Failed to create PayPal order.');
+            throw err;
+          }
+        },
+        onApprove: async (data) => {
+          try {
+            const payment_id = paypalPaymentIds.current[planRef.name];
+            await api.post('/payments/paypal/capture', {
+              paypal_order_id: data.orderID,
+              payment_id,
+            });
+            setCurrentPlan(planRef.name);
+            alert('Payment successful! Your subscription is now active.');
+          } catch {
+            alert('Payment capture failed. Please contact support.');
+          } finally {
+            setPayingPlan(null);
+          }
+        },
+        onCancel: () => { setPayingPlan(null); },
+        onError: () => {
+          setPayingPlan(null);
+          alert('PayPal encountered an error. Please try again.');
+        },
+      });
+
+      paypalButtonInstances.current[planRef.name] = buttons;
+      buttons.render(container);
+    });
+  }, [isINR, paypalLoaded, yearly, currentPlan]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleActivateKey = async () => {
     if (!licenseKey.trim()) return;
@@ -136,6 +246,17 @@ export default function PricingPage() {
     }
   };
 
+  // Convert INR price to user's currency
+  const getConvertedPrice = (inrPrice) => {
+    if (isINR || !rates || inrPrice === 0) return null;
+    const rate = rates[userCurrency] || rates['USD'];
+    if (!rate) return null;
+    const converted = inrPrice * rate;
+    return userCurrency === 'JPY' ? Math.round(converted) : parseFloat(converted.toFixed(2));
+  };
+
+  const currencySymbol = CURRENCY_SYMBOLS[userCurrency] || '$';
+
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 16px' }} className="fade-in">
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -169,7 +290,9 @@ export default function PricingPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20, marginBottom: 48 }}>
         {PLANS.map((plan) => {
           const isCurrent = currentPlan === plan.name;
-          const price = yearly ? plan.yearly : plan.monthly;
+          const inrPrice = yearly ? plan.yearly : plan.monthly;
+          const convertedPrice = getConvertedPrice(inrPrice);
+          const displayPrice = isINR ? inrPrice : convertedPrice;
           const defaultShadow = plan.popular ? `0 4px 24px ${plan.color}30` : 'var(--shadow-sm)';
           const handleEnter = (e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; };
           const handleLeave = (e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = defaultShadow; };
@@ -202,12 +325,22 @@ export default function PricingPage() {
               <div style={{ fontSize: 17, fontWeight: 700, color: plan.color }}>{plan.display}</div>
 
               <div style={{ marginTop: 12 }}>
-                {price === 0 ? (
+                {inrPrice === 0 ? (
                   <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)' }}>Free</span>
+                ) : isINR ? (
+                  <>
+                    <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)' }}>₹{inrPrice.toLocaleString('en-IN')}</span>
+                    <span style={{ fontSize: 14, color: 'var(--text-secondary)', marginLeft: 4 }}>/{yearly ? 'yr' : 'mo'}</span>
+                  </>
                 ) : (
                   <>
-                    <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)' }}>₹{price.toLocaleString('en-IN')}</span>
+                    <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)' }}>
+                      {currencySymbol}{displayPrice != null ? (userCurrency === 'JPY' ? displayPrice.toLocaleString() : displayPrice.toFixed(2)) : '...'}
+                    </span>
                     <span style={{ fontSize: 14, color: 'var(--text-secondary)', marginLeft: 4 }}>/{yearly ? 'yr' : 'mo'}</span>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                      ≈ converted from ₹{inrPrice.toLocaleString('en-IN')}
+                    </div>
                   </>
                 )}
               </div>
@@ -224,19 +357,42 @@ export default function PricingPage() {
                 <FeatureRow check={plan.features.priority_support} label="Priority Support" />
               </div>
 
-              <button
-                onClick={() => handleBuy(plan)}
-                disabled={isCurrent || plan.name === 'free' || payingPlan === plan.name}
-                style={{
-                  marginTop: 20, width: '100%', padding: '11px 0', borderRadius: 8, border: 'none',
-                  background: isCurrent ? 'var(--bg-surface-hover)' : plan.name === 'free' ? 'var(--bg-surface-hover)' : plan.color,
-                  color: isCurrent || plan.name === 'free' ? 'var(--text-muted)' : '#fff',
-                  fontWeight: 700, fontSize: 14, cursor: isCurrent || plan.name === 'free' ? 'default' : 'pointer',
-                  transition: 'opacity 0.2s',
-                }}
-              >
-                {isCurrent ? 'Current Plan' : plan.name === 'free' ? 'Free' : payingPlan === plan.name ? 'Processing...' : 'Buy Now'}
-              </button>
+              {/* Payment button area */}
+              {!isINR && plan.name !== 'free' && !isCurrent ? (
+                <div style={{ marginTop: 20 }}>
+                  {paypalLoaded ? (
+                    <div
+                      ref={(el) => { paypalContainerRefs.current[plan.name] = el; }}
+                      style={{ minHeight: 40 }}
+                    />
+                  ) : (
+                    <button
+                      disabled
+                      style={{
+                        width: '100%', padding: '11px 0', borderRadius: 8, border: 'none',
+                        background: 'var(--bg-surface-hover)', color: 'var(--text-muted)',
+                        fontWeight: 700, fontSize: 14, cursor: 'default',
+                      }}
+                    >
+                      Loading PayPal...
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => isINR ? handleBuy(plan) : undefined}
+                  disabled={isCurrent || plan.name === 'free' || payingPlan === plan.name}
+                  style={{
+                    marginTop: 20, width: '100%', padding: '11px 0', borderRadius: 8, border: 'none',
+                    background: isCurrent ? 'var(--bg-surface-hover)' : plan.name === 'free' ? 'var(--bg-surface-hover)' : plan.color,
+                    color: isCurrent || plan.name === 'free' ? 'var(--text-muted)' : '#fff',
+                    fontWeight: 700, fontSize: 14, cursor: isCurrent || plan.name === 'free' ? 'default' : 'pointer',
+                    transition: 'opacity 0.2s',
+                  }}
+                >
+                  {isCurrent ? 'Current Plan' : plan.name === 'free' ? 'Free' : payingPlan === plan.name ? 'Processing...' : 'Buy Now'}
+                </button>
+              )}
             </div>
           );
         })}
