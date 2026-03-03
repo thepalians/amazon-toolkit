@@ -4,6 +4,28 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v2.5.0] - 2026-03-03
+### Phase 2: Supplier Database (PHASE 2 COMPLETE)
+- New tool: Supplier Database Manager
+- Add suppliers with full contact details
+- Platform tags: Alibaba, IndiaMart, 1688, TradeIndia, etc.
+- Country and city tracking
+- MOQ, lead time, payment terms, rating
+- Product category tagging
+- Search, filter by country/platform, sort by rating/name/lead time
+- Card-based supplier display
+- Edit and delete suppliers
+- Export supplier data as CSV/PDF
+
+### PHASE 2 COMPLETE — 5 New Features Added
+1. Dashboard Analytics (charts + activity)
+2. Email Notifications (SMTP + templates)
+3. Review Analyzer (sentiment + themes)
+4. Inventory Forecasting (stock prediction)
+5. Supplier Database (contact management)
+
+---
+
 ## [v2.4.0] - 2026-03-03
 ### 📦 Phase 2: Inventory Forecasting
 - New tool: Inventory Forecasting & Stock Management

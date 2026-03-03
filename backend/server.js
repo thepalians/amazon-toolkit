@@ -68,6 +68,7 @@ app.use("/api/sales-estimator", require("./routes/salesEstimator"));
 app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/reviews", require("./routes/reviewAnalyzer"));
 app.use("/api/inventory", require("./routes/inventory"));
+app.use("/api/suppliers", require("./routes/supplier"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');
