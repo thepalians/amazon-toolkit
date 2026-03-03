@@ -32,6 +32,7 @@ import PriceAlerts from './components/PriceAlerts/PriceAlerts';
 import FBAFees from './components/FBAFees/FBAFees';
 import SalesEstimator from './components/SalesEstimator/SalesEstimator';
 import ReviewAnalyzer from './components/ReviewAnalyzer/ReviewAnalyzer';
+import Inventory from './components/Inventory/Inventory';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -175,6 +176,16 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <ReviewAnalyzer />
+          <Route
+            path="/inventory"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <Inventory />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }

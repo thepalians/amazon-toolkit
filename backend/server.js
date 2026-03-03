@@ -67,6 +67,7 @@ app.use("/api/fba-fees", require("./routes/fbaFees"));
 app.use("/api/sales-estimator", require("./routes/salesEstimator"));
 app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/reviews", require("./routes/reviewAnalyzer"));
+app.use("/api/inventory", require("./routes/inventory"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');

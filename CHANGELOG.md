@@ -4,6 +4,22 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v2.4.0] - 2026-03-03
+### 📦 Phase 2: Inventory Forecasting
+- New tool: Inventory Forecasting & Stock Management
+- Add products with stock levels, daily sales, lead times
+- Auto-calculates: days remaining, stockout date, reorder point
+- Safety stock and suggested reorder quantity
+- Status tracking: Healthy, Low Stock, Reorder Now, Out of Stock
+- Stock days chart (bar chart)
+- Restock functionality with inventory logs
+- Revenue and cost forecasting (30/60/90 days)
+- Inventory value summary
+- Export inventory data as CSV/PDF
+- Full CRUD: Add, Update, Restock, Delete
+
+---
+
 ## [v2.3.0] - 2026-03-03
 ### ⭐ Phase 2: Review Analyzer
 - New tool: Amazon Review Analyzer
