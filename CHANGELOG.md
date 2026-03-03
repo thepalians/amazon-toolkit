@@ -4,6 +4,21 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v3.4.0] - 2026-03-03
+### Phase 3: Multi-user Teams + Webhook Integrations
+- Teams: Create teams, invite members by email
+- Role-based access: Owner, Admin, Editor, Viewer
+- Accept/decline invitations
+- Team member management
+- Webhooks: Slack, Discord, MS Teams, Custom URL
+- Platform-specific payload formatting
+- Event filtering: price alerts, inventory, AB tests
+- Test webhook with one click
+- Webhook delivery logs with status tracking
+- Toggle active/inactive per webhook
+
+---
+
 ## [v3.2.0] - 2026-03-03
 ### Phase 3: A/B Test Manager + Financial Reports
 - A/B Test Manager: test titles, images, bullets, prices

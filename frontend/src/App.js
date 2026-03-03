@@ -37,6 +37,8 @@ import Suppliers from './components/Suppliers/Suppliers';
 import PPCManager from './components/PPC/PPCManager';
 import ABTest from './components/ABTest/ABTest';
 import Financial from './components/Financial/Financial';
+import Teams from './components/Teams/Teams';
+import Webhooks from './components/Webhooks/Webhooks';
 
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -214,6 +216,26 @@ export default function App() {
               <PrivateRoute>
                 <AppLayout>
                   <Financial />
+          <Route
+            path="/teams"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <Teams />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/webhooks"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <Webhooks />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
                 </AppLayout>
               </PrivateRoute>
             }

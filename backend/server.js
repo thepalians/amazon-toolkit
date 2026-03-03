@@ -72,6 +72,8 @@ app.use("/api/suppliers", require("./routes/supplier"));
 app.use("/api/ppc", require("./routes/ppc"));
 app.use("/api/abtest", require("./routes/abtest"));
 app.use("/api/financial", require("./routes/financial"));
+app.use("/api/teams", require("./routes/team"));
+app.use("/api/webhooks", require("./routes/webhook"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');
