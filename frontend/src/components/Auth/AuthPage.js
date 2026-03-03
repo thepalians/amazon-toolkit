@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FiMail, FiLock, FiUser, FiShoppingCart } from 'react-icons/fi';
 import api from '../../services/api';
 import { useCountry } from '../../context/CountryContext';
 
@@ -39,8 +40,15 @@ export default function AuthPage({ mode }) {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <h1>🛒 Amazon <span>Seller</span> Toolkit</h1>
-          <p style={{ color: '#6b7280', fontSize: '14px', marginTop: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #FF9900, #ff6600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FiShoppingCart size={22} color="#fff" />
+            </div>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a' }}>
+              Amazon <span style={{ color: '#FF9900' }}>Seller</span> Toolkit
+            </h1>
+          </div>
+          <p style={{ color: '#64748b', fontSize: 14 }}>
             {mode === 'login' ? 'Sign in to your account' : 'Create your free account'}
           </p>
         </div>
@@ -51,41 +59,53 @@ export default function AuthPage({ mode }) {
           {mode === 'register' && (
             <div className="form-group">
               <label className="form-label">Full Name</label>
-              <input
-                className="form-control"
-                type="text"
-                name="fullName"
-                value={form.fullName}
-                onChange={handleChange}
-                placeholder="John Doe"
-              />
+              <div style={inputWrap}>
+                <FiUser size={16} style={inputIcon} />
+                <input
+                  className="form-control"
+                  style={inputStyle}
+                  type="text"
+                  name="fullName"
+                  value={form.fullName}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                />
+              </div>
             </div>
           )}
 
           <div className="form-group">
             <label className="form-label">Email</label>
-            <input
-              className="form-control"
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              required
-            />
+            <div style={inputWrap}>
+              <FiMail size={16} style={inputIcon} />
+              <input
+                className="form-control"
+                style={inputStyle}
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input
-              className="form-control"
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              required
-            />
+            <div style={inputWrap}>
+              <FiLock size={16} style={inputIcon} />
+              <input
+                className="form-control"
+                style={inputStyle}
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+              />
+            </div>
           </div>
 
           {mode === 'register' && (
@@ -106,19 +126,29 @@ export default function AuthPage({ mode }) {
             </div>
           )}
 
-          <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={loading}
+            style={{ width: '100%', justifyContent: 'center', marginTop: 8, padding: '12px 20px', fontSize: 15, fontWeight: 700 }}
+          >
             {loading ? <span className="loader" /> : (mode === 'login' ? 'Sign In' : 'Create Account')}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: 20, fontSize: '14px', color: '#6b7280' }}>
+        <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#64748b' }}>
           {mode === 'login' ? (
-            <>Don't have an account? <Link to="/register" style={{ color: '#FF9900' }}>Register</Link></>
+            <>Don't have an account? <Link to="/register" style={{ color: '#FF9900', fontWeight: 600 }}>Register</Link></>
           ) : (
-            <>Already have an account? <Link to="/login" style={{ color: '#FF9900' }}>Sign In</Link></>
+            <>Already have an account? <Link to="/login" style={{ color: '#FF9900', fontWeight: 600 }}>Sign In</Link></>
           )}
         </p>
       </div>
     </div>
   );
 }
+
+const inputWrap = { position: 'relative', display: 'flex', alignItems: 'center' };
+const inputIcon = { position: 'absolute', left: 12, color: '#94a3b8', pointerEvents: 'none' };
+const inputStyle = { paddingLeft: 38 };
+
