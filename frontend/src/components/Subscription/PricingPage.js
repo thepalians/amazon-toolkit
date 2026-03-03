@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FiCheck, FiX, FiKey } from 'react-icons/fi';
 import api from '../../services/api';
 
 const PLANS = [
@@ -136,28 +137,30 @@ export default function PricingPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 16px' }}>
-      {/* Razorpay script loaded via useEffect */}
-
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 16px' }} className="fade-in">
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
-        <h1 style={{ fontSize: 32, fontWeight: 800, color: '#111827' }}>Choose Your Plan</h1>
-        <p style={{ color: '#6b7280', marginTop: 8, fontSize: 16 }}>
+        <h1 style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-primary)' }}>Choose Your Plan</h1>
+        <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: 16 }}>
           Upgrade to unlock more features for your Amazon business
         </p>
 
         {/* Monthly / Yearly Toggle */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginTop: 20, background: '#f3f4f6', borderRadius: 99, padding: '6px 16px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 20, background: 'var(--bg-surface-hover)', borderRadius: 99, padding: '5px' }}>
           <button
             onClick={() => setYearly(false)}
-            style={{ padding: '6px 18px', borderRadius: 99, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 14,
-              background: !yearly ? '#fff' : 'transparent', color: !yearly ? '#111827' : '#6b7280',
-              boxShadow: !yearly ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}
+            style={{ padding: '7px 20px', borderRadius: 99, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 14,
+              background: !yearly ? 'var(--bg-surface)' : 'transparent',
+              color: !yearly ? 'var(--text-primary)' : 'var(--text-secondary)',
+              boxShadow: !yearly ? 'var(--shadow-sm)' : 'none',
+              transition: 'var(--transition)' }}
           >Monthly</button>
           <button
             onClick={() => setYearly(true)}
-            style={{ padding: '6px 18px', borderRadius: 99, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 14,
-              background: yearly ? '#fff' : 'transparent', color: yearly ? '#111827' : '#6b7280',
-              boxShadow: yearly ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}
+            style={{ padding: '7px 20px', borderRadius: 99, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 14,
+              background: yearly ? 'var(--bg-surface)' : 'transparent',
+              color: yearly ? 'var(--text-primary)' : 'var(--text-secondary)',
+              boxShadow: yearly ? 'var(--shadow-sm)' : 'none',
+              transition: 'var(--transition)' }}
           >Yearly <span style={{ color: '#22c55e', fontSize: 12, fontWeight: 700 }}>Save 17%</span></button>
         </div>
       </div>
@@ -167,60 +170,69 @@ export default function PricingPage() {
         {PLANS.map((plan) => {
           const isCurrent = currentPlan === plan.name;
           const price = yearly ? plan.yearly : plan.monthly;
+          const defaultShadow = plan.popular ? `0 4px 24px ${plan.color}30` : 'var(--shadow-sm)';
+          const handleEnter = (e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; };
+          const handleLeave = (e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = defaultShadow; };
           return (
             <div key={plan.name} style={{
-              background: '#fff',
-              borderRadius: 16,
+              background: 'var(--bg-surface)',
+              borderRadius: 'var(--radius-lg)',
               padding: '28px 24px',
-              boxShadow: plan.popular ? '0 4px 24px rgba(139,92,246,0.18)' : '0 1px 6px rgba(0,0,0,0.08)',
-              border: `2px solid ${plan.popular ? plan.color : isCurrent ? plan.color : '#e5e7eb'}`,
+              boxShadow: defaultShadow,
+              border: `2px solid ${plan.popular ? plan.color : isCurrent ? plan.color : 'var(--border-color)'}`,
               position: 'relative',
-            }}>
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleLeave}
+            >
               {plan.popular && (
                 <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
-                  background: plan.color, color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 99 }}>
-                  MOST POPULAR
+                  background: plan.color, color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 99, whiteSpace: 'nowrap' }}>
+                  ✦ MOST POPULAR
                 </div>
               )}
               {isCurrent && (
                 <div style={{ position: 'absolute', top: -14, right: 16,
                   background: '#22c55e', color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 99 }}>
-                  CURRENT PLAN
+                  CURRENT
                 </div>
               )}
 
-              <div style={{ fontSize: 18, fontWeight: 700, color: plan.color }}>{plan.display}</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: plan.color }}>{plan.display}</div>
 
               <div style={{ marginTop: 12 }}>
                 {price === 0 ? (
-                  <span style={{ fontSize: 36, fontWeight: 800, color: '#111827' }}>Free</span>
+                  <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)' }}>Free</span>
                 ) : (
                   <>
-                    <span style={{ fontSize: 36, fontWeight: 800, color: '#111827' }}>₹{price.toLocaleString('en-IN')}</span>
-                    <span style={{ fontSize: 14, color: '#6b7280', marginLeft: 4 }}>/{yearly ? 'yr' : 'mo'}</span>
+                    <span style={{ fontSize: 36, fontWeight: 800, color: 'var(--text-primary)' }}>₹{price.toLocaleString('en-IN')}</span>
+                    <span style={{ fontSize: 14, color: 'var(--text-secondary)', marginLeft: 4 }}>/{yearly ? 'yr' : 'mo'}</span>
                   </>
                 )}
               </div>
 
-              <hr style={{ margin: '16px 0', borderColor: '#f3f4f6' }} />
+              <hr style={{ margin: '16px 0', borderColor: 'var(--border-color)', borderStyle: 'solid', borderWidth: '1px 0 0 0' }} />
 
-              <div style={{ fontSize: 13, color: '#374151', lineHeight: 2 }}>
-                <div>💰 Profit Calc: <strong>{plan.limits.profit_calculator}</strong></div>
-                <div>🔍 Keywords: <strong>{plan.limits.keyword_research}</strong></div>
-                <div>🤖 Listing: <strong>{plan.limits.listing_optimizer}</strong></div>
-                <div>👁️ Competitor: <strong>{plan.limits.competitor_monitor}</strong></div>
-                <div>{plan.features.price_alerts ? '✅' : '❌'} Price Alerts</div>
-                <div>{plan.features.api_access ? '✅' : '❌'} API Access</div>
-                <div>{plan.features.priority_support ? '✅' : '❌'} Priority Support</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 2 }}>
+                <FeatureRow check label={`Profit Calc: ${plan.limits.profit_calculator}`} />
+                <FeatureRow check label={`Keywords: ${plan.limits.keyword_research}`} />
+                <FeatureRow check label={`Listing: ${plan.limits.listing_optimizer}`} />
+                <FeatureRow check label={`Competitor: ${plan.limits.competitor_monitor}`} />
+                <FeatureRow check={plan.features.price_alerts} label="Price Alerts" />
+                <FeatureRow check={plan.features.api_access} label="API Access" />
+                <FeatureRow check={plan.features.priority_support} label="Priority Support" />
               </div>
 
               <button
                 onClick={() => handleBuy(plan)}
                 disabled={isCurrent || plan.name === 'free' || payingPlan === plan.name}
                 style={{
-                  marginTop: 20, width: '100%', padding: '10px 0', borderRadius: 8, border: 'none',
-                  background: isCurrent ? '#e5e7eb' : plan.color, color: isCurrent ? '#6b7280' : '#fff',
+                  marginTop: 20, width: '100%', padding: '11px 0', borderRadius: 8, border: 'none',
+                  background: isCurrent ? 'var(--bg-surface-hover)' : plan.name === 'free' ? 'var(--bg-surface-hover)' : plan.color,
+                  color: isCurrent || plan.name === 'free' ? 'var(--text-muted)' : '#fff',
                   fontWeight: 700, fontSize: 14, cursor: isCurrent || plan.name === 'free' ? 'default' : 'pointer',
+                  transition: 'opacity 0.2s',
                 }}
               >
                 {isCurrent ? 'Current Plan' : plan.name === 'free' ? 'Free' : payingPlan === plan.name ? 'Processing...' : 'Buy Now'}
@@ -231,9 +243,11 @@ export default function PricingPage() {
       </div>
 
       {/* License Key Activation */}
-      <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 16, padding: 28, boxShadow: '0 1px 6px rgba(0,0,0,0.08)' }}>
-        <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>🔑 Activate License Key</h3>
-        <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 16 }}>
+      <div className="card" style={{ maxWidth: 480, margin: '0 auto', padding: 28 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+          <FiKey size={18} color="var(--accent)" /> Activate License Key
+        </h3>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
           Have a license key? Enter it below to activate your subscription.
         </p>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -241,12 +255,14 @@ export default function PricingPage() {
             value={licenseKey}
             onChange={(e) => setLicenseKey(e.target.value.toUpperCase())}
             placeholder="AST-XXXXX-XXXXX-XXXXX-XXXXX"
-            style={{ flex: 1, padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 13, fontFamily: 'monospace' }}
+            className="form-control"
+            style={{ flex: 1, fontFamily: 'monospace' }}
           />
           <button
             onClick={handleActivateKey}
             disabled={activating || !licenseKey.trim()}
-            style={{ padding: '10px 20px', background: '#FF9900', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}
+            className="btn btn-primary"
+            style={{ whiteSpace: 'nowrap' }}
           >
             {activating ? '...' : 'Activate'}
           </button>
@@ -257,12 +273,23 @@ export default function PricingPage() {
 
       {/* Current subscription info */}
       {subscription && (
-        <div style={{ maxWidth: 480, margin: '24px auto 0', background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)', fontSize: 13, color: '#374151' }}>
-          <strong>Active Subscription:</strong> {subscription.plan_name} ({subscription.duration})
+        <div className="card" style={{ maxWidth: 480, margin: '16px auto 0', padding: 20, fontSize: 13, color: 'var(--text-secondary)' }}>
+          <strong style={{ color: 'var(--text-primary)' }}>Active Subscription:</strong> {subscription.plan_name} ({subscription.duration})
           <br />
-          <strong>Expires:</strong> {new Date(subscription.expires_at).toLocaleDateString()}
+          <strong style={{ color: 'var(--text-primary)' }}>Expires:</strong> {new Date(subscription.expires_at).toLocaleDateString()}
         </div>
       )}
+    </div>
+  );
+}
+
+function FeatureRow({ check, label }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {check
+        ? <FiCheck size={14} color="#22c55e" style={{ flexShrink: 0 }} />
+        : <FiX size={14} color="#ef4444" style={{ flexShrink: 0 }} />}
+      <span style={{ color: check ? 'var(--text-primary)' : 'var(--text-muted)' }}>{label}</span>
     </div>
   );
 }

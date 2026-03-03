@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
 import { CountryProvider } from './context/CountryContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -49,8 +50,9 @@ function AdminRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter basename="/amazon-seller-toolkit">
-      <CountryProvider>
-        <Routes>
+      <ThemeProvider>
+        <CountryProvider>
+          <Routes>
           {/* Regular user routes */}
           <Route path="/login" element={<AuthPage mode="login" />} />
           <Route path="/register" element={<AuthPage mode="register" />} />
@@ -138,7 +140,8 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </CountryProvider>
+        </CountryProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

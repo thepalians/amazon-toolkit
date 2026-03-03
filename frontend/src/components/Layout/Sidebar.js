@@ -1,34 +1,56 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { FiGrid, FiDollarSign, FiSearch, FiEdit3, FiEye, FiCreditCard, FiShoppingCart } from 'react-icons/fi';
 
 const navItems = [
-  { path: '/', label: 'Dashboard', icon: '📊' },
-  { path: '/profit', label: 'Profit Calculator', icon: '💰' },
-  { path: '/keywords', label: 'Keyword Research', icon: '🔍' },
-  { path: '/listing', label: 'Listing Optimizer', icon: '🤖' },
-  { path: '/competitor', label: 'Competitor Monitor', icon: '👁️' },
+  { path: '/', label: 'Dashboard', icon: FiGrid },
+  { path: '/profit', label: 'Profit Calculator', icon: FiDollarSign },
+  { path: '/keywords', label: 'Keyword Research', icon: FiSearch },
+  { path: '/listing', label: 'Listing Optimizer', icon: FiEdit3 },
+  { path: '/competitor', label: 'Competitor Monitor', icon: FiEye },
+  { path: '/pricing', label: 'Pricing', icon: FiCreditCard },
 ];
 
 export default function Sidebar({ isOpen }) {
-  if (!isOpen) return null;
-
   return (
-    <aside style={styles.sidebar}>
+    <aside style={{
+      ...styles.sidebar,
+      width: isOpen ? 260 : 70,
+      minWidth: isOpen ? 260 : 70,
+    }}>
+      {/* Logo */}
+      <div style={styles.logo}>
+        <div style={styles.logoIcon}>
+          <FiShoppingCart size={20} color="#FF9900" />
+        </div>
+        {isOpen && (
+          <span style={styles.logoText}>
+            <span style={{ color: '#FF9900' }}>Amazon</span> Toolkit
+          </span>
+        )}
+      </div>
+
+      {/* Nav */}
       <nav style={styles.nav}>
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === '/'}
-            style={({ isActive }) => ({
-              ...styles.link,
-              ...(isActive ? styles.active : {}),
-            })}
-          >
-            <span style={styles.icon}>{item.icon}</span>
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/'}
+              title={!isOpen ? item.label : undefined}
+              style={({ isActive }) => ({
+                ...styles.link,
+                ...(isActive ? styles.active : {}),
+                justifyContent: isOpen ? 'flex-start' : 'center',
+              })}
+            >
+              <Icon size={18} style={{ flexShrink: 0 }} />
+              {isOpen && <span>{item.label}</span>}
+            </NavLink>
+          );
+        })}
       </nav>
     </aside>
   );
@@ -36,18 +58,47 @@ export default function Sidebar({ isOpen }) {
 
 const styles = {
   sidebar: {
-    width: 230,
-    background: '#1a202c',
+    background: 'var(--gradient-sidebar)',
     color: '#e2e8f0',
     flexShrink: 0,
     display: 'flex',
     flexDirection: 'column',
+    transition: 'width 0.3s ease, min-width 0.3s ease',
+    overflow: 'hidden',
+    borderRight: '1px solid rgba(255,255,255,0.05)',
+  },
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '20px 16px',
+    borderBottom: '1px solid rgba(255,255,255,0.07)',
+    minHeight: 64,
+    overflow: 'hidden',
+  },
+  logoIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    background: 'rgba(255,153,0,0.12)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    border: '1px solid rgba(255,153,0,0.2)',
+  },
+  logoText: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: '#f1f5f9',
+    whiteSpace: 'nowrap',
   },
   nav: {
-    padding: '16px 12px',
+    padding: '12px 8px',
     display: 'flex',
     flexDirection: 'column',
-    gap: 4,
+    gap: 2,
+    flex: 1,
   },
   link: {
     display: 'flex',
@@ -56,14 +107,18 @@ const styles = {
     padding: '10px 14px',
     borderRadius: 8,
     textDecoration: 'none',
-    color: '#a0aec0',
-    fontSize: 14,
+    color: 'var(--sidebar-text)',
+    fontSize: 13,
     fontWeight: 500,
-    transition: 'background 0.15s, color 0.15s',
+    transition: 'background 0.15s, color 0.15s, border-color 0.15s',
+    borderLeft: '3px solid transparent',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
   },
   active: {
-    background: '#FF9900',
-    color: '#fff',
+    background: 'rgba(255,153,0,0.12)',
+    color: '#FF9900',
+    borderLeft: '3px solid #FF9900',
   },
-  icon: { fontSize: 18 },
 };
+
