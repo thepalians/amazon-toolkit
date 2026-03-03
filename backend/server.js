@@ -65,6 +65,7 @@ app.use("/api/listing-score", require("./routes/listingScore"));
 app.use("/api/alerts", require("./routes/priceAlert"));
 app.use("/api/fba-fees", require("./routes/fbaFees"));
 app.use("/api/sales-estimator", require("./routes/salesEstimator"));
+app.use("/api/dashboard", require("./routes/dashboard"));
 
 // ---- Country config endpoint (public) ----
 const { getAllCountries } = require('./services/countryConfig');

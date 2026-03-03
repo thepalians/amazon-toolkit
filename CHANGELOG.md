@@ -4,6 +4,18 @@ All notable changes to Amazon Seller Toolkit will be documented in this file.
 
 ---
 
+## [v2.1.0] - 2026-03-03
+### 📊 Phase 2: Dashboard Analytics
+- Upgraded Dashboard with real-time analytics
+- Stats cards: Tracked ASINs, Price Checks, Active Alerts, Triggered, Unread
+- Interactive price trends chart (Recharts LineChart)
+- Recent activity feed (notifications + price checks)
+- Quick access tools grid (all 8 tools)
+- Backend API: /api/dashboard/stats, /price-trends, /recent-activity
+- Responsive layout with chart + activity sidebar
+
+---
+
 ## [v2.0.0] - 2026-03-03
 ### 📊 Sales Estimator BSR + Phase 1 Complete!
 - New tool: Sales Estimator from Amazon BSR rank
