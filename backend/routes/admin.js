@@ -16,6 +16,7 @@
 
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const router = express.Router();
@@ -307,6 +308,7 @@ const SubscriptionPlan = require('../models/SubscriptionPlan');
 const LicenseKey = require('../models/LicenseKey');
 const Payment = require('../models/Payment');
 const UserSubscription = require('../models/UserSubscription');
+const ActivationKey = require('../models/ActivationKey');
 
 router.get('/plans', async (req, res) => {
   try {
@@ -365,7 +367,7 @@ router.post('/license-keys/generate', async (req, res) => {
       let key;
       let exists = true;
       while (exists) {
-        const part = () => require('crypto').randomBytes(3).toString('hex').toUpperCase();
+        const part = () => crypto.randomBytes(3).toString('hex').toUpperCase();
         key = `AST-${part()}-${part()}-${part()}-${part()}`;
         exists = await LicenseKey.findOne({ where: { license_key: key } });
       }
@@ -478,6 +480,117 @@ router.get('/revenue', async (req, res) => {
   } catch (err) {
     console.error('Admin revenue error:', err);
     res.status(500).json({ success: false, message: 'Failed to load revenue data.' });
+  }
+});
+
+// ──────────────────────────────────────────────────────────────
+// GET /api/admin/keys?batch_id=&plan_type=&is_used=&page=1&limit=50
+// ──────────────────────────────────────────────────────────────
+router.get('/keys', async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(200, parseInt(req.query.limit) || 50);
+    const offset = (page - 1) * limit;
+    const where = {};
+    if (req.query.batch_id) where.batch_id = req.query.batch_id;
+    if (req.query.plan_type) where.plan_type = req.query.plan_type;
+    if (req.query.is_used !== undefined && req.query.is_used !== '') {
+      where.is_used = parseInt(req.query.is_used);
+    }
+
+    const { count, rows } = await ActivationKey.findAndCountAll({
+      where,
+      order: [['created_at', 'DESC']],
+      limit,
+      offset,
+    });
+
+    // Attach used_by user details
+    const userIds = rows.filter((k) => k.used_by).map((k) => k.used_by);
+    let usersMap = {};
+    if (userIds.length > 0) {
+      const users = await User.findAll({
+        where: { id: userIds },
+        attributes: ['id', 'full_name', 'email'],
+      });
+      for (const u of users) usersMap[u.id] = u;
+    }
+
+    const keys = rows.map((k) => ({
+      ...k.toJSON(),
+      user: k.used_by ? usersMap[k.used_by] || null : null,
+    }));
+
+    res.json({ success: true, total: count, page, limit, keys });
+  } catch (err) {
+    console.error('Admin list keys error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load activation keys.' });
+  }
+});
+
+// ──────────────────────────────────────────────────────────────
+// POST /api/admin/keys/generate
+// Body: { planType, durationMonths, quantity, batchId }
+// ──────────────────────────────────────────────────────────────
+router.post('/keys/generate', async (req, res) => {
+  try {
+    const { planType, durationMonths, quantity = 1, batchId } = req.body;
+    if (!planType || !durationMonths || !batchId) {
+      return res.status(400).json({ success: false, message: 'planType, durationMonths, and batchId are required.' });
+    }
+    const validPlans = ['starter', 'professional', 'enterprise'];
+    if (!validPlans.includes(planType)) {
+      return res.status(400).json({ success: false, message: `Invalid planType. Must be one of: ${validPlans.join(', ')}.` });
+    }
+    const count = Math.min(500, Math.max(1, parseInt(quantity) || 1));
+    const months = Math.max(1, parseInt(durationMonths) || 12);
+    const generated = [];
+
+    for (let i = 0; i < count; i++) {
+      let keyCode;
+      let exists = true;
+      while (exists) {
+        const part = () => crypto.randomBytes(2).toString('hex').toUpperCase();
+        keyCode = `AST-${part()}-${part()}-${part()}`;
+        exists = await ActivationKey.findOne({ where: { key_code: keyCode } });
+      }
+      const key = await ActivationKey.create({
+        key_code: keyCode,
+        plan_type: planType,
+        duration_months: months,
+        batch_id: batchId,
+      });
+      generated.push(key);
+    }
+
+    res.json({ success: true, message: `Generated ${generated.length} activation key(s).`, keys: generated });
+  } catch (err) {
+    console.error('Admin generate activation keys error:', err);
+    res.status(500).json({ success: false, message: 'Failed to generate activation keys.' });
+  }
+});
+
+// ──────────────────────────────────────────────────────────────
+// GET /api/admin/keys/export/:batchId — CSV export of unused keys
+// ──────────────────────────────────────────────────────────────
+router.get('/keys/export/:batchId', async (req, res) => {
+  try {
+    const keys = await ActivationKey.findAll({
+      where: { batch_id: req.params.batchId, is_used: 0 },
+      order: [['created_at', 'ASC']],
+    });
+
+    const csvLines = ['key_code,plan_type,duration_months,batch_id'];
+    for (const k of keys) {
+      csvLines.push(`${k.key_code},${k.plan_type},${k.duration_months},${k.batch_id}`);
+    }
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="keys-${req.params.batchId}.csv"`);
+    res.send(csvLines.join('\n'));
+  } catch (err) {
+    console.error('Admin export keys error:', err);
+    res.status(500).json({ success: false, message: 'Failed to export keys.' });
   }
 });
 

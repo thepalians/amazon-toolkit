@@ -48,6 +48,16 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     defaultValue: 100,
   },
+  plan_expiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
+  },
+  subscription_source: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    defaultValue: null,
+  },
 }, {
   tableName: 'users',
 });
