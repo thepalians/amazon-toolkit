@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-registerServiceWorker();
 import './App.css';
 import App from './App';
 import { registerServiceWorker } from './registerSW';
