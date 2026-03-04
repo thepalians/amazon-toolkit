@@ -75,7 +75,7 @@ router.get('/', auth, async (req, res) => {
   try {
     const alerts = await PriceAlert.findAll({
       where: { user_id: req.user.id },
-      order: [['createdAt', 'DESC']],
+      order: [['created_at', 'DESC']],
     });
 
     // Enrich with tracking info
@@ -158,7 +158,7 @@ router.get('/notifications', auth, async (req, res) => {
 
     const notifications = await AlertNotification.findAll({
       where,
-      order: [['createdAt', 'DESC']],
+      order: [['created_at', 'DESC']],
       limit,
     });
 

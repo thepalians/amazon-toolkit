@@ -23,8 +23,6 @@ import PricingPage from './components/Subscription/PricingPage';
 import AdminLicenseKeys from './components/Admin/AdminLicenseKeys';
 import AdminPlans from './components/Admin/AdminPlans';
 import AdminSubscriptions from './components/Admin/AdminSubscriptions';
-import TermsOfService from './components/Legal/TermsOfService';
-import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import ActivatePage from './components/Activate/ActivatePage';
 import KeyManagement from './components/Admin/KeyManagement';
 import ListingScore from './components/ListingScore/ListingScore';
@@ -172,166 +170,22 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/fba-fees"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <FBAFees />
-          <Route
-            path="/sales-estimator"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <SalesEstimator />
-          <Route
-            path="/review-analyzer"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <ReviewAnalyzer />
-          <Route
-            path="/inventory"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Inventory />
-          <Route
-            path="/suppliers"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Suppliers />
-          <Route
-            path="/ppc"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <PPCManager />
-          <Route
-            path="/ab-test"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <ABTest />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/financial"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Financial />
-          <Route
-            path="/teams"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Teams />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/webhooks"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Webhooks />
-          <Route
-            path="/api-docs"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <APIDocs />
-          <Route
-            path="/chat"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Chat />
-          <Route
-            path="/rank-tracker"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <RankTrackerUI />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/sourcing"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <Sourcing />
-          <Route
-            path="/bulk"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <BulkOps />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/admin-panel"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  <AdminPanel />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
+          <Route path="/fba-fees" element={<PrivateRoute><AppLayout><FBAFees /></AppLayout></PrivateRoute>} />
+          <Route path="/sales-estimator" element={<PrivateRoute><AppLayout><SalesEstimator /></AppLayout></PrivateRoute>} />
+          <Route path="/review-analyzer" element={<PrivateRoute><AppLayout><ReviewAnalyzer /></AppLayout></PrivateRoute>} />
+          <Route path="/inventory" element={<PrivateRoute><AppLayout><Inventory /></AppLayout></PrivateRoute>} />
+          <Route path="/suppliers" element={<PrivateRoute><AppLayout><Suppliers /></AppLayout></PrivateRoute>} />
+          <Route path="/ppc" element={<PrivateRoute><AppLayout><PPCManager /></AppLayout></PrivateRoute>} />
+          <Route path="/ab-test" element={<PrivateRoute><AppLayout><ABTest /></AppLayout></PrivateRoute>} />
+          <Route path="/financial" element={<PrivateRoute><AppLayout><Financial /></AppLayout></PrivateRoute>} />
+          <Route path="/teams" element={<PrivateRoute><AppLayout><Teams /></AppLayout></PrivateRoute>} />
+          <Route path="/webhooks" element={<PrivateRoute><AppLayout><Webhooks /></AppLayout></PrivateRoute>} />
+          <Route path="/api-docs" element={<PrivateRoute><AppLayout><APIDocs /></AppLayout></PrivateRoute>} />
+          <Route path="/chat" element={<PrivateRoute><AppLayout><Chat /></AppLayout></PrivateRoute>} />
+          <Route path="/rank-tracker" element={<PrivateRoute><AppLayout><RankTrackerUI /></AppLayout></PrivateRoute>} />
+          <Route path="/sourcing" element={<PrivateRoute><AppLayout><Sourcing /></AppLayout></PrivateRoute>} />
+          <Route path="/bulk" element={<PrivateRoute><AppLayout><BulkOps /></AppLayout></PrivateRoute>} />
+          <Route path="/admin-panel" element={<PrivateRoute><AppLayout><AdminPanel /></AppLayout></PrivateRoute>} />
 
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
